@@ -33,7 +33,7 @@ private:
   uint32_t m_payloadId;
   uint32_t m_payloadSize;
   uint32_t m_originalSize;
-
+  uint32_t m_index;
 };
 
 } // namespace ns3
