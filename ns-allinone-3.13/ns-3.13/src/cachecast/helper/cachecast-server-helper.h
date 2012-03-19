@@ -92,7 +92,7 @@ public:
    * creates a ns3::PointToPointChannel, and connects the CacheCastServerNetDevice
    * and the \TODO PointToPointNetDevice to the PointToPointChannel.
    */
-  Ptr<CacheCastServerNetDevice> Install (Ptr<Node> server, Ptr<NetDevice> nodeDevice);
+  Ptr<CacheCastServerNetDevice> Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nodeDevice);
 
   /**
    * \param c a set of nodes

@@ -201,17 +201,17 @@ CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue
 Ptr<CacheCastServerNetDevice>
 CacheCastServerHelper::Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nodeDevice)
 {
-//   NS_ASSERT (nodeDevice != 0);
+  NS_ASSERT (nodeDevice != 0);
 //   NS_ASSERT (nodeDevice
-// 
-//   Ptr<CacheCastServerNetDevice> ccDevice = m_ccDeviceFactory.Create<CacheCastServerNetDevice> ();
-//   ccDevice->SetAddress (Mac48Address::Allocate ());
+
+  Ptr<CacheCastServerNetDevice> ccDevice = m_ccDeviceFactory.Create<CacheCastServerNetDevice> ();
+  ccDevice->SetAddress (Mac48Address::Allocate ());
 //   server.AddDevice (ccDevice);
-//   Ptr<Queue> ccQueue = m_ccQueueFactory.Create<Queue> ();
-//   ccDevice->SetQueue (ccQueue);
-// 
-// 
-//   return ccDevice;
+  Ptr<Queue> ccQueue = m_ccQueueFactory.Create<Queue> ();
+  ccDevice->SetQueue (ccQueue);
+
+
+  return ccDevice;
 }
 
 // NetDeviceContainer 
