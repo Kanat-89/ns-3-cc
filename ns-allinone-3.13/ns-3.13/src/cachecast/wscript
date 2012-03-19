@@ -7,12 +7,12 @@
 #     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
 
 def build(bld):
-    module = bld.create_ns3_module('cachecast', ['core'])
+    module = bld.create_ns3_module('cachecast', ['core', 'point-to-point'])
     module.source = [
         'model/cachecast.cc',
         'model/cachecast-header.cc',
-        'model/cachecast-net-device.cc',
-        'helper/cachecast-helper.cc',
+        'model/cachecast-server-net-device.cc',
+        'helper/cachecast-server-helper.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('cachecast')
@@ -25,8 +25,8 @@ def build(bld):
     headers.source = [
         'model/cachecast.h',
         'model/cachecast-header.h',
-        'model/cachecast-net-device.h',
-        'helper/cachecast-helper.h',
+        'model/cachecast-server-net-device.h',
+        'helper/cachecast-server-helper.h',
         ]
 
     if bld.env.ENABLE_EXAMPLES:
