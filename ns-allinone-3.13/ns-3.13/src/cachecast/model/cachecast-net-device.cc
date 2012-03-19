@@ -9,6 +9,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (CacheCastNetDevice);
 
 CacheCastNetDevice::CacheCastNetDevice ()
+  : PointToPointNetDevice()
 //   : m_payloadId (0),
 //     m_payloadSize (0),
 //     m_originalSize (0)
