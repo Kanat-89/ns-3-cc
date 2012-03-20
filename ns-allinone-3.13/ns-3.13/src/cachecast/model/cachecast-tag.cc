@@ -25,39 +25,44 @@ CacheCastTag::GetInstanceTypeId (void) const
 uint32_t 
 CacheCastTag::GetSerializedSize (void) const
 {
-  return sizeof (uint32_t);
+  return sizeof (uint8_t);
 }
 
 void 
 CacheCastTag::Serialize (TagBuffer buf) const
 {
-  buf.WriteU32 (m_id);
+  buf.WriteU8 (m_lastPacket ? 1 : 0);
 }
 
 void 
 CacheCastTag::Deserialize (TagBuffer buf)
 {
-  m_id = buf.ReadU32 ();
+  m_lastPacket = buf.ReadU8 () ? true : false;
 }
 
 void 
 CacheCastTag::Print (std::ostream &os) const
 {
-  os << "CacheCastTag: ID=" << m_id;
+  os << "CacheCastTag: LastPacket=" << m_lastPacket;
 }
 
 CacheCastTag::CacheCastTag ()
   : Tag (),
-    m_id (0)
+    m_lastPacket (false)
 {
 }
 
-CacheCastTag::CacheCastTag (uint32_t id)
+CacheCastTag::CacheCastTag (bool lastPacket)
   : Tag (),
-    m_id (id)
+    m_lastPacket (lastPacket)
 {
 }
 
+bool
+CacheCastTag::IsLastPacket ()
+{
+  return m_lastPacket;
+}
 
 } // namespace ns3
 

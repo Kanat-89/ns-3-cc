@@ -17,9 +17,10 @@ public:
   virtual void Deserialize (TagBuffer buf);
   virtual void Print (std::ostream &os) const;
   CacheCastTag ();
-  CacheCastTag (uint32_t id);
+  CacheCastTag (bool lastPacket);
+  bool IsLastPacket ();
 private:
-  uint32_t m_id; // not used for anything at the moment
+  bool m_lastPacket; // not used for anything at the moment
 };
 
 } // namespace ns3
