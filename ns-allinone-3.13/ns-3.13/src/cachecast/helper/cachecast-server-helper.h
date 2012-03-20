@@ -26,7 +26,7 @@ class Node;
  * PcapUserHelperForDevice and AsciiTraceUserHelperForDevice are
  * "mixins".
  */
-class CacheCastServerHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
+class CacheCastServerHelper //: public PcapHelperForDevice, public AsciiTraceHelperForDevice
 {
 public:
   /**
@@ -90,8 +90,9 @@ public:
    *
    * This method creates a ns3::CacheCastServerNetDevice on the server,
    * creates a ns3::PointToPointChannel, and connects the CacheCastServerNetDevice
-   * and the \TODO PointToPointNetDevice to the PointToPointChannel.
+   * and the TODO PointToPointNetDevice to the PointToPointChannel.
    */
+  // TODO change PointToPointNetDevice to CacheCastNetDevice
   Ptr<CacheCastServerNetDevice> Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nodeDevice);
 
   /**

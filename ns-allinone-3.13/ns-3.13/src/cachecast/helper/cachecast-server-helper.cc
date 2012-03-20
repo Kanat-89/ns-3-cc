@@ -202,14 +202,46 @@ Ptr<CacheCastServerNetDevice>
 CacheCastServerHelper::Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nodeDevice)
 {
   NS_ASSERT (nodeDevice != 0);
-//   NS_ASSERT (nodeDevice
+  // Assuming a Queue and an Address is assigned to the nodeDevice
 
   Ptr<CacheCastServerNetDevice> ccDevice = m_ccDeviceFactory.Create<CacheCastServerNetDevice> ();
   ccDevice->SetAddress (Mac48Address::Allocate ());
-//   server.AddDevice (ccDevice);
+  server->AddDevice (ccDevice);
   Ptr<Queue> ccQueue = m_ccQueueFactory.Create<Queue> ();
   ccDevice->SetQueue (ccQueue);
 
+  // If MPI is enabled, we need to see if both nodes have the same system id 
+  // (rank), and the rank is the same as this instance.  If both are true, 
+  //use a normal p2p channel, otherwise use a remote channel
+  bool useNormalChannel = true;
+  Ptr<PointToPointChannel> channel = 0;
+  if (MpiInterface::IsEnabled ())
+    {
+      uint32_t n1SystemId = server->GetSystemId ();
+      uint32_t n2SystemId = nodeDevice->GetNode ()->GetSystemId ();
+      uint32_t currSystemId = MpiInterface::GetSystemId ();
+      if (n1SystemId != currSystemId || n2SystemId != currSystemId) 
+        {
+          useNormalChannel = false;
+        }
+    }
+  if (useNormalChannel)
+    {
+      channel = m_channelFactory.Create<PointToPointChannel> ();
+    }
+  else
+    {
+      channel = m_remoteChannelFactory.Create<PointToPointRemoteChannel> ();
+      Ptr<MpiReceiver> mpiRecA = CreateObject<MpiReceiver> ();
+      Ptr<MpiReceiver> mpiRecB = CreateObject<MpiReceiver> ();
+      mpiRecA->SetReceiveCallback (MakeCallback (&CacheCastServerNetDevice::Receive, ccDevice));
+      mpiRecB->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, nodeDevice));
+      ccDevice->AggregateObject (mpiRecA);
+      nodeDevice->AggregateObject (mpiRecB);
+    }
+
+  ccDevice->Attach (channel);
+  nodeDevice->Attach (channel);
 
   return ccDevice;
 }

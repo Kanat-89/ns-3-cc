@@ -10,6 +10,7 @@ def build(bld):
     module = bld.create_ns3_module('cachecast', ['core', 'point-to-point'])
     module.source = [
         'model/cachecast.cc',
+        'model/cachecast-tag.cc',
         'model/cachecast-header.cc',
         'model/cachecast-server-net-device.cc',
         'helper/cachecast-server-helper.cc',
@@ -24,6 +25,7 @@ def build(bld):
     headers.module = 'cachecast'
     headers.source = [
         'model/cachecast.h',
+        'model/cachecast-tag.h',
         'model/cachecast-header.h',
         'model/cachecast-server-net-device.h',
         'helper/cachecast-server-helper.h',

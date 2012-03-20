@@ -3,6 +3,7 @@
 #define __CACHECAST_SERVER_NET_DEVICE_H__
 
 #include "ns3/point-to-point-net-device.h"
+#include "ns3/queue.h"
 
 namespace ns3 {
 
@@ -12,15 +13,25 @@ namespace ns3 {
 class CacheCastServerNetDevice : public PointToPointNetDevice
 {
 public:
+  static TypeId GetTypeId (void);
   /**
    * /brief Construct an empty CacheCastServerNetDevice
    */
   CacheCastServerNetDevice ();
 
-  void GetTest();
-
+  bool Send (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
+  
 private:
-  int m_test;
+  /**
+   * The queue which this CacheCastServerNetDevice uses to store the CacheCast packets
+   * before they are sent as a batch onto the channel
+   */
+  Ptr<Queue> m_ccQueue;
+
+  /**
+   * The next free payload ID to use
+   */
+  uint32_t m_nextPayloadId;
 
 };
 
