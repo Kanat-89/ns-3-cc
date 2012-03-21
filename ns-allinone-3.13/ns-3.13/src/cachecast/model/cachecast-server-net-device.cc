@@ -53,33 +53,32 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
     return PointToPointNetDevice::Send (packet, dest, protocolNumber);
   }
 
-  PacketInfo info (packet, dest, protocolNumber);
+  PacketInfo info(packet, dest, protocolNumber);
   m_ccQueue->push_back (info);
 
   if (ccTag.IsLastPacket ())
   {
-    // TODO do the actual sending
     NS_LOG_INFO ("Last CacheCast packet");
-    PacketInfo inf = m_ccQueue->front ();
-    NS_LOG_INFO (inf.packet << " " << inf.dest << " " << inf.protocolNumber);
+    Ptr<Node> node = GetNode ();
 
-    PacketInfo inf2 = m_ccQueue->back ();
-    NS_LOG_INFO (inf2.packet << " " << inf2.dest << " " << inf2.protocolNumber);
+    // Get all CacheCastServerNetDevice on node and issue a FinishSend ()
+    for (int i = 0; i < node->GetNDevices (); i++)
+    {
+      Ptr<CacheCastServerNetDevice> ccDev = DynamicCast<CacheCastServerNetDevice> (node->GetDevice (i));
 
-    // TODO get all CacheCastServerNetDevice on node and issue a FinishSend ()
-//     Ptr<Node> node = GetNode ();
-//     NS_LOG_INFO("Node:" << node);
-// 
-//     for (int i = 1; i <= node->GetNDevices (); i++)
-//     {
-//       Ptr<NetDevice> dev = node->GetDevice (i);
-// 
-//       // TODO get CacheCastServerNetDevice's
-// 
-//       retValue = ccDev->FinishSend () == false ? false : retValue;
-//     }
-// 
-//     return retValue;
+      if (ccDev != 0)
+      {
+        bool ret = ccDev->FinishSend ();
+        
+        if (ret == true)
+          NS_LOG_INFO("All CacheCast packets sent from device " << ccDev);
+      
+        retValue = ret == false ? false : retValue;
+      }
+
+    }
+
+    return retValue;
   }
 
   return true;
@@ -88,7 +87,22 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
 bool
 CacheCastServerNetDevice::FinishSend ()
 {
+  NS_LOG_FUNCTION_NOARGS();
 
+  std::vector<PacketInfo>::iterator it;
+
+  for (it = m_ccQueue->begin(); it < m_ccQueue->end(); it++)
+  {
+    NS_LOG_INFO (it->packet << " " << it->dest << " " << it->protocolNumber);
+  }
+
+  m_ccQueue->clear ();
+
+//     PacketInfo inf = m_ccQueue->front ();
+//     NS_LOG_INFO (inf.packet << " " << inf.dest << " " << inf.protocolNumber);
+// 
+//     PacketInfo inf2 = m_ccQueue->back ();
+//     NS_LOG_INFO (inf2.packet << " " << inf2.dest << " " << inf2.protocolNumber);
 //   packet->RemovePacketTag
 
 // remember to remove tag before sending packet
