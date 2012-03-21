@@ -18,9 +18,50 @@ public:
   CacheCastHeader ();
 
   /**
+   * \brief Construct a CacheCastHeader with fields set
+   */
+  CacheCastHeader (uint32_t payloadId, uint32_t payloadSize,
+      uint32_t originalSize, uint32_t index);
+
+  /**
    * \returns the payload ID of this packet
    */
   uint32_t GetPayloadId (void) const;
+
+  /**
+   * \returns the payload size of this packet
+   */
+  uint32_t GetPayloadSize (void) const;
+
+  /**
+   * \returns the original size of this packet
+   */
+//   uint32_t GetOriginalSize (void) const;
+
+  /**
+   * \returns the table/cache-slot index of this packet
+   */
+  uint32_t GetIndex (void) const;
+
+  /**
+   * \brief Set the payload ID of this packet
+   */
+  void SetPayloadId (uint32_t payloadId);
+
+  /**
+   * \brief Set the payload size of this packet
+   */
+  void SetPayloadSize (uint32_t payloadSize);
+
+  /**
+   * \brief Set the original size of this packet
+   */
+//   void SetOriginalSize (uint32_t originalSize);
+
+  /**
+   * \brief Set the table/cache-slot index of this packet
+   */
+  void SetIndex (uint32_t index);
 
   static TypeId GetTypeId (void);
   TypeId GetInstanceTypeId (void) const;
@@ -32,7 +73,7 @@ public:
 private:
   uint32_t m_payloadId;
   uint32_t m_payloadSize;
-  uint32_t m_originalSize;
+  uint32_t m_originalSize; //TODO remove?
   uint32_t m_index;
 };
 

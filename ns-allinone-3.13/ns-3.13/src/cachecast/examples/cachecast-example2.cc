@@ -13,7 +13,8 @@ using namespace ns3;
 int 
 main (int argc, char *argv[])
 {
-  LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
+  LogComponentEnable ("CacheCastTestApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("CacheCastServerNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
   bool verbose = true;

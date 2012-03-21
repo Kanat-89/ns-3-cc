@@ -207,8 +207,10 @@ CacheCastServerHelper::Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nod
   Ptr<CacheCastServerNetDevice> ccDevice = m_ccDeviceFactory.Create<CacheCastServerNetDevice> ();
   ccDevice->SetAddress (Mac48Address::Allocate ());
   server->AddDevice (ccDevice);
-  Ptr<Queue> ccQueue = m_ccQueueFactory.Create<Queue> ();
-  ccDevice->SetQueue (ccQueue);
+  Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
+  ccDevice->SetQueue (queue);
+//   Ptr<Queue> ccQueue = m_ccQueueFactory.Create<Queue> ();
+//   ccDevice->SetCacheCastQueue (ccQueue);
 
   // If MPI is enabled, we need to see if both nodes have the same system id 
   // (rank), and the rank is the same as this instance.  If both are true, 
