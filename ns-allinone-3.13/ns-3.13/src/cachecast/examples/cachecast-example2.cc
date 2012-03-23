@@ -26,10 +26,6 @@ main (int argc, char *argv[])
   NodeContainer nodes;
   nodes.Create (2);
 
-  PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
-
 //   NetDeviceContainer devices;
 //   devices = pointToPoint.Install (nodes);
 
@@ -46,6 +42,10 @@ main (int argc, char *argv[])
 
   /* Set up server */
   CacheCastServerHelper ccHelper;
+//   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  ccHelper.SetDeviceAttribute ("DataRate", StringValue ("8Kbps"));
+  ccHelper.SetChannelAttribute ("Delay", StringValue ("100ms"));
+
   Ptr<CacheCastServerNetDevice> ccDevice = ccHelper.Install (nodes.Get(0), dev);
 //   ccDevice.SetAttribute ("Mtu", UintegerValue (512));
 

@@ -16,11 +16,13 @@ public:
   virtual void Serialize (TagBuffer buf) const;
   virtual void Deserialize (TagBuffer buf);
   virtual void Print (std::ostream &os) const;
+  CacheCastTag (int32_t payloadSize, bool lastPacket = false);
   CacheCastTag ();
-  CacheCastTag (bool lastPacket);
   bool IsLastPacket ();
+  int32_t GetPayloadSize ();
 private:
-  bool m_lastPacket; // not used for anything at the moment
+  bool m_lastPacket;
+  int32_t m_payloadSize;
 };
 
 } // namespace ns3
