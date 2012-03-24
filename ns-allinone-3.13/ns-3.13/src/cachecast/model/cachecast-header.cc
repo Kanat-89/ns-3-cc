@@ -12,16 +12,17 @@ NS_OBJECT_ENSURE_REGISTERED (CacheCastHeader);
 CacheCastHeader::CacheCastHeader ()
   : m_payloadId (0),
     m_payloadSize (0),
-    m_originalSize (0),
+//     m_originalSize (0),
     m_index (0)
 {
 }
 
 CacheCastHeader::CacheCastHeader (uint32_t payloadId, uint32_t payloadSize,
-    uint32_t originalSize, uint32_t index)
+//     uint32_t originalSize,
+    uint32_t index)
   : m_payloadId (payloadId),
     m_payloadSize (payloadSize),
-    m_originalSize (originalSize),
+//     m_originalSize (originalSize),
     m_index (index)
 {
 }
@@ -95,7 +96,7 @@ CacheCastHeader::Print (std::ostream &os) const
 {
   os << "payload ID " << m_payloadId << " "
      << "payload size " << m_payloadSize << " "
-     << "original size " << m_originalSize
+//      << "original size " << m_originalSize
   ;
 }
 

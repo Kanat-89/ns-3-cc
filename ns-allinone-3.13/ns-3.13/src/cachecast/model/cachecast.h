@@ -2,21 +2,21 @@
 #ifndef __CACHECAST_H__
 #define __CACHECAST_H__
 
-#include "ns3/socket.h"
 #include <vector>
+#include "ns3/socket.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
 
 /* ... */
 class CacheCast
 {
-public:
-    CacheCast ();
-    void Add (Socket socket);
 
-    bool Msend ();
-
-
+public:    
+    bool Msend(Ptr<Packet> packet);
+    void AddSocket(Ptr <Socket> socket);
+    std::vector <Socket>* m_sockets;
+    vector<Socket>::iterator socket;
 }
 
 

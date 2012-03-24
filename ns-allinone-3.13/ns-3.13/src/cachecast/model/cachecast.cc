@@ -2,24 +2,32 @@
 
 #include "cachecast.h"
 
+NS_LOG_COMPONENT_DEFINE ("CacheCast");
+
 
 namespace ns3 {
+NS_OBJECT_ENSURE_REGISTERED ("CacheCast");
 
-/* ... */
-NS_OBJECT_ENSURE_REGISTERED (CacheCast);
-CacheCastHeader::CacheCastHeader ()
-:
+
+
+void 
+CacheCast::AddSocket (Ptr<Socket> socket)
 {
+    m_sockets.push_back (socket);
 }
 
-CacheCast::Add(Socket socket){
-
-}
-
-CacheCast::Msend()
+bool 
+CacheCast::Msend(Ptr<Packet> packet)
 {
-
+    bool successful;
+    for(socket = m_sockets.begin; socket != m_sockets.end(); ++socket)
+    {
+        if(socket->Send(packet) >= 0){
+           successful = true; 
+        }  
+    }
+    return successful; 
 }
- 
-} //end namespace ns3
+
+}//end namespace ns3
 

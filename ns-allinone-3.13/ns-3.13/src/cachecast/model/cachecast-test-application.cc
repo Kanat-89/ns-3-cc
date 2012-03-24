@@ -48,8 +48,8 @@ CacheCastTestApplication::StartApplication (void)
 
   for (int i = 1; i < NUM; i++)
     {
-      Ptr<Packet> packet = Create<Packet> (512);
-      CacheCastTag tag;
+      Ptr<Packet> packet = Create<Packet> (1000);
+      CacheCastTag tag (1000);
       packet->AddPacketTag (tag);
 
       m_sock->Send (packet);
@@ -61,8 +61,8 @@ CacheCastTestApplication::StartApplication (void)
   sock->Bind();
   sock->Connect (m_address);
 
-  Ptr<Packet> packet = Create<Packet> (512);
-  CacheCastTag tag (true);
+  Ptr<Packet> packet = Create<Packet> (1000);
+  CacheCastTag tag (1000, true);
   packet->AddPacketTag (tag);
 
   sock->Send (packet);

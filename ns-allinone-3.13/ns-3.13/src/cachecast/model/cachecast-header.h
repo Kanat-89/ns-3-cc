@@ -21,7 +21,8 @@ public:
    * \brief Construct a CacheCastHeader with fields set
    */
   CacheCastHeader (uint32_t payloadId, uint32_t payloadSize,
-      uint32_t originalSize, uint32_t index);
+//       uint32_t originalSize, 
+      uint32_t index);
 
   /**
    * \returns the payload ID of this packet
@@ -73,7 +74,7 @@ public:
 private:
   uint32_t m_payloadId;
   uint32_t m_payloadSize;
-  uint32_t m_originalSize; //TODO remove?
+//   uint32_t m_originalSize; //TODO remove?
   uint32_t m_index;
 };
 

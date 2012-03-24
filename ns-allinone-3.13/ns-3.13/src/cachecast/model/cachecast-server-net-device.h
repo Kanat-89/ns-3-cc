@@ -32,6 +32,12 @@ public:
   bool FinishSend();
 
 private:
+  /**
+   * \brief Calculate the next available payload ID
+   * Payload ID's can wrap around every Seconds
+   */
+  uint32_t GetNextPayloadId ();
+
   struct PacketInfo
   {
     Ptr<Packet> packet;
@@ -54,7 +60,7 @@ private:
   /**
    * The next free payload ID to use
    */
-  uint32_t m_nextPayloadId;
+//   uint32_t m_nextPayloadId; TODO remove?
 
 };
 

@@ -2,9 +2,10 @@
 
 #include "ns3/log.h"
 #include "ns3/udp-header.h"
+#include "ns3/simulator.h"
 #include "ns3/cachecast-tag.h"
 #include "cachecast-server-net-device.h"
-//#include "cachecast-header.h"
+#include "cachecast-header.h"
 
 NS_LOG_COMPONENT_DEFINE ("CacheCastServerNetDevice");
 
@@ -13,8 +14,8 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (CacheCastServerNetDevice);
 
 CacheCastServerNetDevice::CacheCastServerNetDevice ()
-  : PointToPointNetDevice(),
-    m_nextPayloadId (0)
+  : PointToPointNetDevice()
+//     m_nextPayloadId (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_ccQueue = new std::vector<PacketInfo>;
@@ -47,7 +48,7 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
   // if DCCP gets supported handle it also
   if (!packet->PeekHeader (udp_head) || !packet->PeekPacketTag (ccTag))
   {
-    NS_LOG_INFO ("Packet " << packet << " is either not a UDP packets or not a CacheCast packet");
+    NS_LOG_DEBUG ("Packet " << packet << " is either not a UDP packets or not a CacheCast packet");
     // just use the regular PointToPointNetDevice::Send if the packet is not a
     // CacheCast packet or unsupported transport protocol is used
     return PointToPointNetDevice::Send (packet, dest, protocolNumber);
@@ -58,7 +59,7 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
 
   if (ccTag.IsLastPacket ())
   {
-    NS_LOG_INFO ("Last CacheCast packet");
+    NS_LOG_DEBUG ("Last CacheCast packet");
     Ptr<Node> node = GetNode ();
 
     // Get all CacheCastServerNetDevice on node and issue a FinishSend ()
@@ -71,7 +72,7 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
         bool ret = ccDev->FinishSend ();
         
         if (ret == true)
-          NS_LOG_INFO("All CacheCast packets sent from device " << ccDev);
+          NS_LOG_DEBUG ("All CacheCast packets sent from device " << ccDev);
       
         retValue = ret == false ? false : retValue;
       }
@@ -88,25 +89,61 @@ bool
 CacheCastServerNetDevice::FinishSend ()
 {
   NS_LOG_FUNCTION_NOARGS();
-
+  uint32_t count = 0;
   std::vector<PacketInfo>::iterator it;
 
   for (it = m_ccQueue->begin(); it < m_ccQueue->end(); it++)
   {
-    NS_LOG_INFO (it->packet << " " << it->dest << " " << it->protocolNumber);
+    Ptr<Packet> p = it->packet;
+    CacheCastTag tag;
+    p->RemovePacketTag(tag);
+
+    NS_ASSERT_MSG (tag.GetPayloadSize () >= 0, "CacheCast: Illegal payload size "
+        << tag.GetPayloadSize ());
+
+    CacheCastHeader cch (GetNextPayloadId (), tag.GetPayloadSize (), 0);
+
+    /* Truncate all packets besides first packet */
+    if (count > 0)
+    {
+//       std::cerr << "sz " << tag.GetPayloadSize ();
+      p->RemoveAtEnd (tag.GetPayloadSize ());
+      cch.SetPayloadSize (0);
+      std::cerr << "psz " << p->GetSize () << "\n";
+    }
+    
+    // TODO enable when CSU present
+//     p->AddHeader (cch);
+
+    NS_LOG_DEBUG ("CacheCast: Sending packet " << it->packet << " " <<
+        it->dest << " " << it->protocolNumber);
+
+    bool ret = PointToPointNetDevice::Send (it->packet, it->dest, it->protocolNumber);
+
+    // TODO handle ret
+
+    count++;
   }
 
   m_ccQueue->clear ();
 
-//     PacketInfo inf = m_ccQueue->front ();
-//     NS_LOG_INFO (inf.packet << " " << inf.dest << " " << inf.protocolNumber);
-// 
-//     PacketInfo inf2 = m_ccQueue->back ();
-//     NS_LOG_INFO (inf2.packet << " " << inf2.dest << " " << inf2.protocolNumber);
-//   packet->RemovePacketTag
-
-// remember to remove tag before sending packet
   return true;
+}
+
+uint32_t
+CacheCastServerNetDevice::GetNextPayloadId ()
+{
+  static uint32_t payloadId = 0;
+  static double pre = Simulator::Now ().GetSeconds ();
+
+  /* Wrap around if one second has passed */
+  if (Simulator::Now ().GetSeconds () - pre > 1.0)
+  {
+    payloadId = 0;
+    pre = Simulator::Now ().GetSeconds ();
+  }
+
+  return payloadId++;
 }
 
 } // namespace ns3
