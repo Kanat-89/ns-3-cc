@@ -6,7 +6,7 @@ NS_LOG_COMPONENT_DEFINE ("CacheCast");
 
 
 namespace ns3 {
-NS_OBJECT_ENSURE_REGISTERED ("CacheCast");
+NS_OBJECT_ENSURE_REGISTERED (CacheCast);
 
 
 
@@ -19,11 +19,12 @@ CacheCast::AddSocket (Ptr<Socket> socket)
 bool 
 CacheCast::Msend(Ptr<Packet> packet)
 {
-    bool successful;
-    for(socket = m_sockets.begin; socket != m_sockets.end(); ++socket)
+    vector<Socket>*:: iterator socket;
+    bool failed;
+    for(socket = m_sockets.begin(); socket != m_sockets.end(); ++socket)
     {
-        if(socket->Send(packet) >= 0){
-           successful = true; 
+        if(socket->Send(packet) < 0){
+           failed = true; 
         }  
     }
     return successful; 

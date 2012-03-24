@@ -16,8 +16,8 @@ public:
     bool Msend(Ptr<Packet> packet);
     void AddSocket(Ptr <Socket> socket);
     std::vector <Socket>* m_sockets;
-    vector<Socket>::iterator socket;
-}
+    
+};
 
 
 } //end namespace ns3
