@@ -49,7 +49,8 @@ CacheCastTestApplication::StartApplication (void)
   for (int i = 1; i < NUM; i++)
     {
       Ptr<Packet> packet = Create<Packet> (1000);
-      CacheCastTag tag (1000);
+      NS_LOG_INFO ("Packet size: " << packet->GetSize ());
+      CacheCastTag tag (i-1, 1000);
       packet->AddPacketTag (tag);
 
       m_sock->Send (packet);
@@ -62,7 +63,7 @@ CacheCastTestApplication::StartApplication (void)
   sock->Connect (m_address);
 
   Ptr<Packet> packet = Create<Packet> (1000);
-  CacheCastTag tag (1000, true);
+  CacheCastTag tag (NUM-1, 1000, true);
   packet->AddPacketTag (tag);
 
   sock->Send (packet);

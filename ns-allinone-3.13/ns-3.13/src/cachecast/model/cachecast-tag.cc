@@ -6,6 +6,52 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (CacheCastTag);
 
+CacheCastTag::CacheCastTag (int32_t socketIndex, int32_t payloadSize, bool lastPacket)
+  : Tag (),
+    m_socketIndex (socketIndex),
+    m_payloadSize (payloadSize),
+    m_lastPacket (lastPacket)
+{
+}
+
+CacheCastTag::CacheCastTag ()
+  : Tag (),
+    m_socketIndex (-1),
+    m_payloadSize (-1),
+    m_lastPacket (false)
+{
+}
+
+bool
+CacheCastTag::IsLastPacket ()
+{
+  return m_lastPacket;
+}
+
+int32_t
+CacheCastTag::GetPayloadSize ()
+{
+  return m_payloadSize;
+}
+
+void
+CacheCastTag::SetPayloadSize (int32_t payloadSize)
+{
+  m_payloadSize = payloadSize;
+}
+
+int32_t
+CacheCastTag::GetSocketIndex ()
+{
+  return m_socketIndex;
+}
+
+void
+CacheCastTag::SetSocketIndex (int32_t socketIndex)
+{
+  m_socketIndex = socketIndex;
+}
+
 TypeId 
 CacheCastTag::GetTypeId (void)
 {
@@ -25,53 +71,31 @@ CacheCastTag::GetInstanceTypeId (void) const
 uint32_t 
 CacheCastTag::GetSerializedSize (void) const
 {
-  return sizeof (uint8_t) + sizeof (int32_t);
+  return sizeof (uint8_t) + sizeof (int32_t) * 2;
 }
 
 void 
 CacheCastTag::Serialize (TagBuffer buf) const
 {
-  buf.WriteU8 (m_lastPacket ? 1 : 0);
+  buf.WriteU32 (m_socketIndex);
   buf.WriteU32 (m_payloadSize);
+  buf.WriteU8 (m_lastPacket ? 1 : 0);
 }
 
 void 
 CacheCastTag::Deserialize (TagBuffer buf)
 {
-  m_lastPacket = buf.ReadU8 () ? true : false;
+  m_socketIndex = (int32_t) buf.ReadU32 ();
   m_payloadSize = (int32_t) buf.ReadU32 ();
+  m_lastPacket = buf.ReadU8 () ? true : false;
 }
 
 void 
 CacheCastTag::Print (std::ostream &os) const
 {
-  os << "CacheCastTag: LastPacket=" << m_lastPacket;
-}
-
-CacheCastTag::CacheCastTag (int32_t payloadSize, bool lastPacket)
-  : Tag (),
-    m_lastPacket (lastPacket),
-    m_payloadSize (payloadSize)
-{
-}
-
-CacheCastTag::CacheCastTag ()
-  : Tag (),
-    m_lastPacket (false),
-    m_payloadSize (-1)
-{
-}
-
-bool
-CacheCastTag::IsLastPacket ()
-{
-  return m_lastPacket;
-}
-
-int32_t
-CacheCastTag::GetPayloadSize ()
-{
-  return m_payloadSize;
+  os << "CacheCastTag: LastPacket=" << m_lastPacket << " "
+     << "Socket index=" << m_socketIndex << " "
+     << "Payload size=" << m_payloadSize;
 }
 
 } // namespace ns3

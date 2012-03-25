@@ -14,6 +14,7 @@ namespace ns3 {
 class CacheCastServerNetDevice : public PointToPointNetDevice
 {
 public:
+  typedef std::vector<uint32_t>::const_iterator Iterator;
   static TypeId GetTypeId (void);
   /**
    * /brief Construct an empty CacheCastServerNetDevice
@@ -29,7 +30,17 @@ public:
    * CacheCastServerNetDevice. Then all batched packets are transmitted on the link
    * as a packet train. The function should be called on all CacheCastServerNetDevice's
    * on a node when one of them received the last packet */
-  bool FinishSend();
+  bool FinishSend(uint32_t payloadId);
+
+  /**
+   * \brief Get an iterator which refers to the first failed socket index
+   */
+  Iterator Begin (void) const;
+
+  /**
+   * \brief Get an iterator which indicates past-the-last failed socket index
+   */
+  Iterator End (void) const;
 
 private:
   /**
@@ -51,16 +62,22 @@ private:
       protocolNumber = prot;
     }
   };
+
   /**
    * The queue which this CacheCastServerNetDevice uses to store the CacheCast packets
    * before they are sent as a batch onto the channel
    */
-  std::vector<PacketInfo>* m_ccQueue;
+  std::vector<PacketInfo> m_ccQueue;
+
+  /**
+   * The index of sockets which failed to send on this CacheCastServerNetDevice
+   */
+  std::vector<uint32_t> m_failed;
 
   /**
    * The next free payload ID to use
    */
-//   uint32_t m_nextPayloadId; TODO remove?
+//   static uint32_t m_nextPayloadId;
 
 };
 

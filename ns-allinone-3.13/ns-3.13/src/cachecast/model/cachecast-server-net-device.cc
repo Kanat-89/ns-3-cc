@@ -18,13 +18,13 @@ CacheCastServerNetDevice::CacheCastServerNetDevice ()
 //     m_nextPayloadId (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_ccQueue = new std::vector<PacketInfo>;
+//   m_ccQueue = new std::vector<PacketInfo>;
 }
 
 CacheCastServerNetDevice::~CacheCastServerNetDevice ()
 {
-  m_ccQueue->clear ();
-  delete m_ccQueue;
+//   m_ccQueue.clear ();
+//   delete m_ccQueue;
 }
 
 TypeId
@@ -55,12 +55,13 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
   }
 
   PacketInfo info(packet, dest, protocolNumber);
-  m_ccQueue->push_back (info);
+  m_ccQueue.push_back (info);
 
   if (ccTag.IsLastPacket ())
   {
     NS_LOG_DEBUG ("Last CacheCast packet");
     Ptr<Node> node = GetNode ();
+    uint32_t payloadId = GetNextPayloadId ();
 
     // Get all CacheCastServerNetDevice on node and issue a FinishSend ()
     for (int i = 0; i < node->GetNDevices (); i++)
@@ -69,10 +70,12 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
 
       if (ccDev != 0)
       {
-        bool ret = ccDev->FinishSend ();
+        bool ret = ccDev->FinishSend (payloadId);
         
         if (ret == true)
           NS_LOG_DEBUG ("All CacheCast packets sent from device " << ccDev);
+        else
+          NS_LOG_DEBUG ("Not all CacheCast packets were sent from device " << ccDev);
       
         retValue = ret == false ? false : retValue;
       }
@@ -86,13 +89,14 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
 }
 
 bool
-CacheCastServerNetDevice::FinishSend ()
+CacheCastServerNetDevice::FinishSend (uint32_t payloadId)
 {
   NS_LOG_FUNCTION_NOARGS();
+  bool retValue = true;
   uint32_t count = 0;
   std::vector<PacketInfo>::iterator it;
 
-  for (it = m_ccQueue->begin(); it < m_ccQueue->end(); it++)
+  for (it = m_ccQueue.begin(); it < m_ccQueue.end(); it++)
   {
     Ptr<Packet> p = it->packet;
     CacheCastTag tag;
@@ -100,8 +104,10 @@ CacheCastServerNetDevice::FinishSend ()
 
     NS_ASSERT_MSG (tag.GetPayloadSize () >= 0, "CacheCast: Illegal payload size "
         << tag.GetPayloadSize ());
+    NS_ASSERT_MSG (tag.GetSocketIndex () >= 0, "CacheCast: Illegal socket index "
+        << tag.GetSocketIndex ());
 
-    CacheCastHeader cch (GetNextPayloadId (), tag.GetPayloadSize (), 0);
+    CacheCastHeader cch (payloadId, tag.GetPayloadSize (), 0);
 
     /* Truncate all packets besides first packet */
     if (count > 0)
@@ -120,14 +126,32 @@ CacheCastServerNetDevice::FinishSend ()
 
     bool ret = PointToPointNetDevice::Send (it->packet, it->dest, it->protocolNumber);
 
-    // TODO handle ret
+    /* If the packets failed to be sent onto the link, add index to failed vector */
+    if (ret == false)
+    {
+      NS_LOG_DEBUG ("CacheCast: Packet " << it->packet << " failed to be sent on device " << this);
+      m_failed.push_back (tag.GetSocketIndex ());
+      retValue = false;
+    }
 
     count++;
   }
 
-  m_ccQueue->clear ();
+  m_ccQueue.clear ();
 
-  return true;
+  return retValue;
+}
+
+CacheCastServerNetDevice::Iterator
+CacheCastServerNetDevice::Begin (void) const
+{
+  return m_failed.begin ();
+}
+
+CacheCastServerNetDevice::Iterator
+CacheCastServerNetDevice::End (void) const
+{
+  return m_failed.end ();
 }
 
 uint32_t
