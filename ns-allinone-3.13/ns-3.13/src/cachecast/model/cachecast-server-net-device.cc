@@ -64,7 +64,7 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
     uint32_t payloadId = GetNextPayloadId ();
 
     // Get all CacheCastServerNetDevice on node and issue a FinishSend ()
-    for (int i = 0; i < node->GetNDevices (); i++)
+    for (uint32_t i = 0; i < node->GetNDevices (); i++)
     {
       Ptr<CacheCastServerNetDevice> ccDev = DynamicCast<CacheCastServerNetDevice> (node->GetDevice (i));
 

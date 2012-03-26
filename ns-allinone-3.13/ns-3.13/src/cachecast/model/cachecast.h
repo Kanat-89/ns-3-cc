@@ -9,13 +9,14 @@
 namespace ns3 {
 
 /* ... */
-class CacheCast
+class CacheCast : public Object
 {
+std::vector <Ptr <Socket> > m_sockets; 
 
-public:    
+public:
+    static TypeId GetTypeId (void);     
     bool Msend(Ptr<Packet> packet);
     void AddSocket(Ptr <Socket> socket);
-    std::vector <Socket>* m_sockets;
     
 };
 
