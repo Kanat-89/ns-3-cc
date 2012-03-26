@@ -16,18 +16,6 @@ class CacheCastServerNetDevice : public PointToPointNetDevice
 {
 public:
   /**
-   * Iterator to loop over failed sockets
-   * Used Begin() and End() to use the iterator
-   *
-   * Usage:
-   * CacheCastServerNetDevice::Iterator it;
-   * for (it = ccDev.Begin(); it < ccDev.End(); it++) {
-   *   // uint32_t socketIndex = *it; 
-   * }
-   */
-//   typedef std::vector<uint32_t>::const_iterator Iterator;
-
-  /**
    * /brief Construct an empty CacheCastServerNetDevice
    */
   CacheCastServerNetDevice ();
@@ -47,18 +35,13 @@ public:
    *
    * \param payloadId the payload ID to use for these packet's payload
    */
-  bool FinishSend(uint32_t payloadId); //TODO check if it can be private (friend)
+  bool FinishSend(uint32_t payloadId);
 
   /**
-   * \brief Get an iterator which refers to the first failed socket index
+   * \brief Callback function to call if a packet was not sent
+   *
+   * \param callback the callback function to call
    */
-//   Iterator Begin (void) const;
-
-  /**
-   * \brief Get an iterator which indicates past-the-last failed socket index
-   */
-//   Iterator End (void) const;
-
   void SetFailedCallback (Callback<void, uint32_t> callback);
 
 private:
@@ -93,10 +76,8 @@ private:
   std::vector<PacketInfo> m_ccQueue;
 
   /**
-   * The index of sockets which failed to send on this CacheCastServerNetDevice
+   * Callback for failed sockets
    */
-//   std::vector<uint32_t> m_failed;
-
   Callback<void, uint32_t> m_failedCallback;
 
 };

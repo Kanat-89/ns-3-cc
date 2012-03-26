@@ -15,10 +15,8 @@ NS_OBJECT_ENSURE_REGISTERED (CacheCastServerNetDevice);
 
 CacheCastServerNetDevice::CacheCastServerNetDevice ()
   : PointToPointNetDevice()
-//     m_nextPayloadId (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
-//   m_ccQueue = new std::vector<PacketInfo>;
 }
 
 TypeId
@@ -124,7 +122,6 @@ CacheCastServerNetDevice::FinishSend (uint32_t payloadId)
     if (ret == false)
     {
       NS_LOG_DEBUG ("CacheCast: Packet " << it->packet << " failed to be sent on device " << this);
-//       m_failed.push_back (tag.GetSocketIndex ());
       m_failedCallback (tag.GetSocketIndex ());
       retValue = false;
     }
@@ -137,17 +134,6 @@ CacheCastServerNetDevice::FinishSend (uint32_t payloadId)
   return retValue;
 }
 
-// CacheCastServerNetDevice::Iterator
-// CacheCastServerNetDevice::Begin (void) const
-// {
-//   return m_failed.begin ();
-// }
-
-// CacheCastServerNetDevice::Iterator
-// CacheCastServerNetDevice::End (void) const
-// {
-//   return m_failed.end ();
-// }
 
 //TODO sjekk om pre kan vaere static
 //opprett aggregated object in node CacheCastPid
