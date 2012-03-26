@@ -7,7 +7,7 @@
 namespace ns3 {
 
 /**
- * \brief Header for CacheCast packet
+ * \brief Header for CacheCast packet, aka. CacheCast header
  */
 class CacheCastHeader : public Header
 {
@@ -72,9 +72,21 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
 
 private:
+  /**
+   * The payload ID of the packet
+   */
   uint32_t m_payloadId;
+
+  /**
+   * The size of the payload in the packet.
+   */
   uint32_t m_payloadSize;
+
 //   uint32_t m_originalSize; //TODO remove?
+
+  /**
+   * The index into the CMU table and the CSU cache slot
+   */
   uint32_t m_index;
 };
 

@@ -21,12 +21,6 @@ CacheCastServerNetDevice::CacheCastServerNetDevice ()
 //   m_ccQueue = new std::vector<PacketInfo>;
 }
 
-CacheCastServerNetDevice::~CacheCastServerNetDevice ()
-{
-//   m_ccQueue.clear ();
-//   delete m_ccQueue;
-}
-
 TypeId
 CacheCastServerNetDevice::GetTypeId (void)
 {
@@ -37,6 +31,12 @@ CacheCastServerNetDevice::GetTypeId (void)
   return tid;
 }
 
+void
+CacheCastServerNetDevice::SetFailedCallback (Callback<void, uint32_t> callback)
+{
+  m_failedCallback = callback;
+}
+
 bool
 CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber)
 {
@@ -45,14 +45,12 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
 
   UdpHeader udp_head;
   CacheCastTag ccTag;
+  bool hasCcTag = packet->PeekPacketTag (ccTag);
+  NS_ASSERT_MSG (hasCcTag, "All CacheCast packets must have a CacheCastTag");
+
   // if DCCP gets supported handle it also
-  if (!packet->PeekHeader (udp_head) || !packet->PeekPacketTag (ccTag))
-  {
-    NS_LOG_DEBUG ("Packet " << packet << " is either not a UDP packets or not a CacheCast packet");
-    // just use the regular PointToPointNetDevice::Send if the packet is not a
-    // CacheCast packet or unsupported transport protocol is used
-    return PointToPointNetDevice::Send (packet, dest, protocolNumber);
-  }
+  uint32_t hasUdpHrd = packet->PeekHeader (udp_head);
+  NS_ASSERT_MSG(hasUdpHrd, "Only UDP packets are supported by CacheCast");
 
   PacketInfo info(packet, dest, protocolNumber);
   m_ccQueue.push_back (info);
@@ -75,17 +73,15 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
         if (ret == true)
           NS_LOG_DEBUG ("All CacheCast packets sent from device " << ccDev);
         else
+        {
           NS_LOG_DEBUG ("Not all CacheCast packets were sent from device " << ccDev);
-      
-        retValue = ret == false ? false : retValue;
+          retValue = false;
+        }
       }
-
     }
-
-    return retValue;
   }
 
-  return true;
+  return retValue;
 }
 
 bool
@@ -112,10 +108,8 @@ CacheCastServerNetDevice::FinishSend (uint32_t payloadId)
     /* Truncate all packets besides first packet */
     if (count > 0)
     {
-//       std::cerr << "sz " << tag.GetPayloadSize ();
       p->RemoveAtEnd (tag.GetPayloadSize ());
       cch.SetPayloadSize (0);
-      std::cerr << "psz " << p->GetSize () << "\n";
     }
     
     // TODO enable when CSU present
@@ -126,11 +120,12 @@ CacheCastServerNetDevice::FinishSend (uint32_t payloadId)
 
     bool ret = PointToPointNetDevice::Send (it->packet, it->dest, it->protocolNumber);
 
-    /* If the packets failed to be sent onto the link, add index to failed vector */
+    /* If the packet failed to be sent onto the link, add index to failed vector */
     if (ret == false)
     {
       NS_LOG_DEBUG ("CacheCast: Packet " << it->packet << " failed to be sent on device " << this);
-      m_failed.push_back (tag.GetSocketIndex ());
+//       m_failed.push_back (tag.GetSocketIndex ());
+      m_failedCallback (tag.GetSocketIndex ());
       retValue = false;
     }
 
@@ -142,18 +137,20 @@ CacheCastServerNetDevice::FinishSend (uint32_t payloadId)
   return retValue;
 }
 
-CacheCastServerNetDevice::Iterator
-CacheCastServerNetDevice::Begin (void) const
-{
-  return m_failed.begin ();
-}
+// CacheCastServerNetDevice::Iterator
+// CacheCastServerNetDevice::Begin (void) const
+// {
+//   return m_failed.begin ();
+// }
 
-CacheCastServerNetDevice::Iterator
-CacheCastServerNetDevice::End (void) const
-{
-  return m_failed.end ();
-}
+// CacheCastServerNetDevice::Iterator
+// CacheCastServerNetDevice::End (void) const
+// {
+//   return m_failed.end ();
+// }
 
+//TODO sjekk om pre kan vaere static
+//opprett aggregated object in node CacheCastPid
 uint32_t
 CacheCastServerNetDevice::GetNextPayloadId ()
 {

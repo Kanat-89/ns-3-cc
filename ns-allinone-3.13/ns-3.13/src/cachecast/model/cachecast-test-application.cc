@@ -36,9 +36,31 @@ CacheCastTestApplication::SetAddress (Address address)
 }
 
 void
+CacheCastTestApplication::SocketFailed (uint32_t socketIndex)
+{
+  NS_LOG_INFO (socketIndex << "hurray\n");
+}
+
+void
 CacheCastTestApplication::StartApplication (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  Ptr<Node> node = GetNode();
+  for (uint32_t i = 0; i < node->GetNDevices (); i++)
+  {
+    Ptr<CacheCastServerNetDevice> ccDev = DynamicCast<CacheCastServerNetDevice> (node->GetDevice (i));
+    if (ccDev != 0)
+    {
+      ccDev->SetFailedCallback (MakeCallback (&CacheCastTestApplication::SocketFailed, this));
+    }
+  }
+
+
+//   m_sock = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+
+//   NS_ASSERT_MSG (m_sock->GetSocketType () == Socket::NS3_SOCK_DGRAM,
+//       "CacheCast only supports UDP packets");
 
   m_sock = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
   m_sock->Bind();
@@ -54,8 +76,8 @@ CacheCastTestApplication::StartApplication (void)
       packet->AddPacketTag (tag);
 
       m_sock->Send (packet);
-      NS_LOG_INFO ("Sent " << packet->GetSize () << " bytes to " <<
-          InetSocketAddress::ConvertFrom (m_address).GetIpv4 ());
+//       NS_LOG_INFO ("Sent " << packet->GetSize () << " bytes to " <<
+//           InetSocketAddress::ConvertFrom (m_address).GetIpv4 ());
     }
 
   Ptr<Socket> sock = Socket::CreateSocket(GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
@@ -63,12 +85,22 @@ CacheCastTestApplication::StartApplication (void)
   sock->Connect (m_address);
 
   Ptr<Packet> packet = Create<Packet> (1000);
-  CacheCastTag tag (NUM-1, 1000, true);
-  packet->AddPacketTag (tag);
 
-  sock->Send (packet);
-  NS_LOG_INFO ("Sent " << packet->GetSize () << " bytes to " <<
-      InetSocketAddress::ConvertFrom (m_address).GetIpv4 ());
+
+  Ptr<Packet> p = Copy<Packet> (packet);
+
+
+  CacheCastTag tag (NUM-1, 1000, true);
+  p->AddPacketTag (tag);
+
+
+  std::cerr << "test " << p->PeekPacketTag (tag) << "\n";
+  std::cerr << "test " << packet->PeekPacketTag (tag) << "\n";
+
+
+  sock->Send (p);
+//   NS_LOG_INFO ("Sent " << packet->GetSize () << " bytes to " <<
+//       InetSocketAddress::ConvertFrom (m_address).GetIpv4 ());
 }
 
 void

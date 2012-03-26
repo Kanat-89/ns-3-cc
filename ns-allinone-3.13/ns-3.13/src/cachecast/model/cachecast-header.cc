@@ -94,9 +94,10 @@ CacheCastHeader::GetInstanceTypeId (void) const
 void
 CacheCastHeader::Print (std::ostream &os) const
 {
-  os << "payload ID " << m_payloadId << " "
-     << "payload size " << m_payloadSize << " "
+  os << "payload ID=" << m_payloadId << " "
+     << "payload size=" << m_payloadSize << " "
 //      << "original size " << m_originalSize
+     << "index=" << m_index
   ;
 }
 

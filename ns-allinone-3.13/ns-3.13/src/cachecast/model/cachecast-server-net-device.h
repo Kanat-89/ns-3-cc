@@ -4,6 +4,7 @@
 
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/queue.h"
+#include "ns3/callback.h"
 #include <vector>
 
 namespace ns3 {
@@ -14,33 +15,51 @@ namespace ns3 {
 class CacheCastServerNetDevice : public PointToPointNetDevice
 {
 public:
-  typedef std::vector<uint32_t>::const_iterator Iterator;
-  static TypeId GetTypeId (void);
+  /**
+   * Iterator to loop over failed sockets
+   * Used Begin() and End() to use the iterator
+   *
+   * Usage:
+   * CacheCastServerNetDevice::Iterator it;
+   * for (it = ccDev.Begin(); it < ccDev.End(); it++) {
+   *   // uint32_t socketIndex = *it; 
+   * }
+   */
+//   typedef std::vector<uint32_t>::const_iterator Iterator;
+
   /**
    * /brief Construct an empty CacheCastServerNetDevice
    */
   CacheCastServerNetDevice ();
 
-  ~CacheCastServerNetDevice ();
+  static TypeId GetTypeId (void);
 
+  /**
+   * \brief Overridden function Send() in PointToPointNetDevice
+   */
   bool Send (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
 
   /**
-   * This function is called when the last CacheCast packet is received on a
+   * \brief This function is called when the last CacheCast packet is received on a
    * CacheCastServerNetDevice. Then all batched packets are transmitted on the link
-   * as a packet train. The function should be called on all CacheCastServerNetDevice's
-   * on a node when one of them received the last packet */
-  bool FinishSend(uint32_t payloadId);
+   * as a packet train. The function should be called on all CacheCastServerNetDevices
+   * on a node when one of them received the last packet 
+   *
+   * \param payloadId the payload ID to use for these packet's payload
+   */
+  bool FinishSend(uint32_t payloadId); //TODO check if it can be private (friend)
 
   /**
    * \brief Get an iterator which refers to the first failed socket index
    */
-  Iterator Begin (void) const;
+//   Iterator Begin (void) const;
 
   /**
    * \brief Get an iterator which indicates past-the-last failed socket index
    */
-  Iterator End (void) const;
+//   Iterator End (void) const;
+
+  void SetFailedCallback (Callback<void, uint32_t> callback);
 
 private:
   /**
@@ -49,6 +68,10 @@ private:
    */
   uint32_t GetNextPayloadId ();
 
+  /**
+   * \brief used to store the parameters for the Send() function call in the 
+   * CacheCast queue in order to call Send() in FinishSend()
+   */
   struct PacketInfo
   {
     Ptr<Packet> packet;
@@ -72,12 +95,9 @@ private:
   /**
    * The index of sockets which failed to send on this CacheCastServerNetDevice
    */
-  std::vector<uint32_t> m_failed;
+//   std::vector<uint32_t> m_failed;
 
-  /**
-   * The next free payload ID to use
-   */
-//   static uint32_t m_nextPayloadId;
+  Callback<void, uint32_t> m_failedCallback;
 
 };
 

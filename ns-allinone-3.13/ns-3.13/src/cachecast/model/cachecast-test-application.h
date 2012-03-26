@@ -15,6 +15,7 @@ public:
   CacheCastTestApplication ();
   void SetAddress (Address address);
 private:
+  void SocketFailed (uint32_t socketIndex);
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 

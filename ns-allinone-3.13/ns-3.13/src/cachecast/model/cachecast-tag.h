@@ -63,8 +63,17 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
+  /**
+   * \brief Index of a socket into the collection of sockets used by Msend()
+   */
   int32_t m_socketIndex;
+  /**
+   * \brief Size of the payload of the packet
+   */
   int32_t m_payloadSize;
+  /**
+   * \brief true if this tag belongs to the last packet in a Msend() iteration
+   */
   bool m_lastPacket;
 };
 
