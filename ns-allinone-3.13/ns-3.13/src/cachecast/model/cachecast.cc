@@ -2,6 +2,9 @@
 
 #include "cachecast.h"
 #include "ns3/log.h"
+#include "cachecast-tag.h"
+#include "ns3/node.h"
+#include "cachecast-server-net-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("CacheCast");
 
@@ -17,15 +20,52 @@ CacheCast::AddSocket (Ptr<Socket> socket)
 bool 
 CacheCast::Msend(Ptr<Packet> packet)
 {
+    //sjekke om socket er udp?
+    Ptr<Packet> pack; 
+    Ptr<Node> node;
     std::vector<Ptr <Socket> >::iterator socket;
-    bool failed;
+    
+    uint32_t socket_index = 0;
+
+    bool lastpacket;
+    bool succesful = true;
+    
+    
     for(socket = m_sockets.begin(); socket != m_sockets.end(); ++socket)
     {
-        if((*socket)->Send(packet) < 0){
-           failed = true; 
-        }  
+        
+        NS_ASSERT_MSG ((*socket)->GetSocketType () == Socket::NS3_SOCK_DGRAM, "Beskjed til meg");
+        
+        node = (*socket)->GetNode ();
+        for (uint32_t i = 0; i < (node->GetNDevices ()); i++)
+        {
+            Ptr<CacheCastServerNetDevice> ccDev = DynamicCast<CacheCastServerNetDevice> (node->GetDevice (i));
+            if (ccDev != 0)
+            {
+                ccDev->SetFailedCallback (MakeCallback (&CacheCast::SetFailedSocket, this));
+            }
+        } 
+
+        lastpacket = (socket_index == m_sockets.size ()-1); 
+        pack = Copy<Packet> (packet); 
+        CacheCastTag tag (socket_index, pack->GetSize (), lastpacket);
+        pack->AddPacketTag (tag);        
+          
+        if((*socket)->Send(pack) < 0)
+        {
+           succesful = false;
+           //m_failed[i] = true; 
+        }
+        socket_index++; 
     }
-    return failed; 
+    
+    
+    return succesful; 
+}
+
+void
+CacheCast::SetFailedSocket (uint32_t i){
+     m_failed.push_back (m_sockets[i]);
 }
 
 TypeId
