@@ -6,6 +6,7 @@
 #include "ns3/cachecast-tag.h"
 #include "cachecast-server-net-device.h"
 #include "cachecast-header.h"
+#include "cachecast-pid.h"
 
 NS_LOG_COMPONENT_DEFINE ("CacheCastServerNetDevice");
 
@@ -41,6 +42,10 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
   NS_LOG_FUNCTION (packet << dest << protocolNumber);
   bool retValue = true;
 
+  Ptr<Node> node = GetNode ();
+  Ptr<CacheCastPid> ccp = node->GetObject<CacheCastPid> ();
+  NS_ASSERT_MSG (ccp, "A CacheCast server must have a CacheCastPid object");
+
   UdpHeader udp_head;
   CacheCastTag ccTag;
   bool hasCcTag = packet->PeekPacketTag (ccTag);
@@ -56,8 +61,7 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
   if (ccTag.IsLastPacket ())
   {
     NS_LOG_DEBUG ("Last CacheCast packet");
-    Ptr<Node> node = GetNode ();
-    uint32_t payloadId = GetNextPayloadId ();
+    uint32_t payloadId = ccp->CalculateNewPayloadId ();
 
     // Get all CacheCastServerNetDevice on node and issue a FinishSend ()
     for (uint32_t i = 0; i < node->GetNDevices (); i++)

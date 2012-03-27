@@ -70,16 +70,32 @@ CacheCastTestApplication::StartApplication (void)
   sock2->Bind();
   sock2->Connect (m_address);
 
-  int NUM = 2;
+  Ptr<Socket> sock3 = Socket::CreateSocket(GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  sock3->Bind();
+  sock3->Connect (m_address);
 
   CacheCast cc;
   cc.AddSocket (sock1);
   cc.AddSocket (sock2);
+  cc.AddSocket (sock3);
 
   Ptr<Packet> packet = Create<Packet> (1000);
   NS_LOG_INFO ("Packet size: " << packet->GetSize ());
 
   cc.Msend(packet);
+
+  Ptr<Packet> packet2 = Create<Packet> (900);
+  cc.Msend (packet2);
+
+  static int i = 0;
+
+  if (i == 0) {
+    Time t (Seconds (2));
+    Simulator::Schedule (t, &CacheCastTestApplication::StartApplication, this);
+  }
+  i++;
+
+
 
 //   for (int i = 0; i < NUM; i++)
 //     {
@@ -91,31 +107,10 @@ CacheCastTestApplication::StartApplication (void)
 // //           InetSocketAddress::ConvertFrom (m_address).GetIpv4 ());
 //     }
 
-  
-
-//   Ptr<Packet> packet = Create<Packet> (1000);
-// 
-// 
-//   Ptr<Packet> p = Copy<Packet> (packet);
-// 
-// 
-//   CacheCastTag tag (NUM-1, 1000, true);
-//   p->AddPacketTag (tag);
-
-
-//   std::cerr << "test " << p->PeekPacketTag (tag) << "\n";
-//   std::cerr << "test " << packet->PeekPacketTag (tag) << "\n";
-
-
-//   sock->Send (p);
-//   NS_LOG_INFO ("Sent " << packet->GetSize () << " bytes to " <<
-//       InetSocketAddress::ConvertFrom (m_address).GetIpv4 ());
 }
 
 void
 CacheCastTestApplication::StopApplication (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-
-//   m_sock->Close();
 }

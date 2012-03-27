@@ -20,7 +20,6 @@ private:
   virtual void StopApplication (void);
 
   Address m_address;
-  Ptr<Socket> m_sock;
 };
 
 } // namespace ns3

@@ -11,6 +11,7 @@ def build(bld):
     module.source = [
         'model/cachecast.cc',
         'model/cachecast-tag.cc',
+        'model/cachecast-pid.cc',
         'model/cachecast-header.cc',
         'model/cachecast-test-application.cc',
         'model/cachecast-server-net-device.cc',
@@ -28,6 +29,7 @@ def build(bld):
     headers.source = [
         'model/cachecast.h',
         'model/cachecast-tag.h',
+        'model/cachecast-pid.h',
         'model/cachecast-header.h',
         'model/cachecast-test-application.h',
         'model/cachecast-server-net-device.h',

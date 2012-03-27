@@ -15,6 +15,7 @@ main (int argc, char *argv[])
 {
   LogComponentEnable ("CacheCastTestApplication", LOG_LEVEL_ALL);
   LogComponentEnable ("CacheCastServerNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable ("CacheCastPid", LOG_LEVEL_ALL);
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
   bool verbose = true;
@@ -43,7 +44,7 @@ main (int argc, char *argv[])
   /* Set up server */
   CacheCastServerHelper ccHelper;
 //   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  ccHelper.SetDeviceAttribute ("DataRate", StringValue ("8Kbps"));
+  ccHelper.SetDeviceAttribute ("DataRate", StringValue ("10Kbps"));
   ccHelper.SetChannelAttribute ("Delay", StringValue ("100ms"));
 
   Ptr<CacheCastServerNetDevice> ccDevice = ccHelper.Install (nodes.Get(0), dev);

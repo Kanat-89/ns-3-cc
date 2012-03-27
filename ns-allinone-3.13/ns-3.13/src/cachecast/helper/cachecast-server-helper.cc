@@ -14,8 +14,9 @@
 #include "ns3/names.h"
 #include "ns3/mpi-interface.h"
 #include "ns3/mpi-receiver.h"
-
 #include "ns3/trace-helper.h"
+
+#include "ns3/cachecast-pid.h"
 
 NS_LOG_COMPONENT_DEFINE ("CacheCastServerHelper");
 
@@ -201,12 +202,20 @@ CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue
 Ptr<CacheCastServerNetDevice>
 CacheCastServerHelper::Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nodeDevice)
 {
-  NS_ASSERT (nodeDevice != 0);
+  // TODO this will be handled when CacheCastNetDevice is ready
   // Assuming a Queue and an Address is assigned to the nodeDevice
+  NS_ASSERT (nodeDevice != 0);
+  NS_ASSERT (server != 0);
 
   Ptr<CacheCastServerNetDevice> ccDevice = m_ccDeviceFactory.Create<CacheCastServerNetDevice> ();
   ccDevice->SetAddress (Mac48Address::Allocate ());
   server->AddDevice (ccDevice);
+  
+  if (!server->GetObject<CacheCastPid> ()) {
+    Ptr<CacheCastPid> ccp = Create<CacheCastPid> ();
+    server->AggregateObject(ccp);
+  }
+
   Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
   ccDevice->SetQueue (queue);
 //   Ptr<Queue> ccQueue = m_ccQueueFactory.Create<Queue> ();
