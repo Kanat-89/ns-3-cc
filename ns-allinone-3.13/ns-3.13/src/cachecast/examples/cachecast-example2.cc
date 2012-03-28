@@ -27,32 +27,13 @@ main (int argc, char *argv[])
   NodeContainer nodes;
   nodes.Create (2);
 
-//   NetDeviceContainer devices;
-//   devices = pointToPoint.Install (nodes);
-
-  /* Set up node */
-  ObjectFactory devF;
-  ObjectFactory qF;
-  qF.SetTypeId ("ns3::DropTailQueue");
-  devF.SetTypeId ("ns3::PointToPointNetDevice");
-  Ptr<PointToPointNetDevice> dev = devF.Create<PointToPointNetDevice> ();
-  dev->SetAddress (Mac48Address::Allocate ());
-  nodes.Get (1)->AddDevice (dev);
-  Ptr<Queue> q = qF.Create<Queue> ();
-  dev->SetQueue(q);
-
-  /* Set up server */
   CacheCastServerHelper ccHelper;
 //   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   ccHelper.SetDeviceAttribute ("DataRate", StringValue ("10Kbps"));
   ccHelper.SetChannelAttribute ("Delay", StringValue ("100ms"));
 
-  Ptr<CacheCastServerNetDevice> ccDevice = ccHelper.Install (nodes.Get(0), dev);
+  NetDeviceContainer devices = ccHelper.Install (nodes);
 //   ccDevice.SetAttribute ("Mtu", UintegerValue (512));
-
-  NetDeviceContainer devices;
-  devices.Add (ccDevice);
-  devices.Add (dev);
 
   InternetStackHelper stack;
   stack.Install (nodes);
@@ -76,7 +57,7 @@ main (int argc, char *argv[])
 
   Ptr<CacheCastTestApplication> app = Create<CacheCastTestApplication> ();
   Address addr (InetSocketAddress (interfaces.GetAddress (1), 9));
-  app->SetAddress (addr);
+  app->AddAddress (addr);
   nodes.Get (0)->AddApplication (app);
   app->SetStartTime (Seconds (2.0));
   app->SetStopTime (Seconds (10.0));

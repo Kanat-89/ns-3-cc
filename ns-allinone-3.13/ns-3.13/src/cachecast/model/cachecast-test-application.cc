@@ -29,10 +29,10 @@ CacheCastTestApplication::CacheCastTestApplication ()
 }
 
 void
-CacheCastTestApplication::SetAddress (Address address)
+CacheCastTestApplication::AddAddress (Address address)
 {
-  NS_LOG_FUNCTION (this);
-  m_address = address;
+  NS_LOG_FUNCTION (address);
+  m_address.push_back (address);
 }
 
 void
@@ -62,38 +62,43 @@ CacheCastTestApplication::StartApplication (void)
 //   NS_ASSERT_MSG (m_sock->GetSocketType () == Socket::NS3_SOCK_DGRAM,
 //       "CacheCast only supports UDP packets");
 
-  Ptr<Socket> sock1 = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  sock1->Bind();
-  sock1->Connect (m_address);
-
-  Ptr<Socket> sock2 = Socket::CreateSocket(GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  sock2->Bind();
-  sock2->Connect (m_address);
-
-  Ptr<Socket> sock3 = Socket::CreateSocket(GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  sock3->Bind();
-  sock3->Connect (m_address);
-
   CacheCast cc;
-  cc.AddSocket (sock1);
-  cc.AddSocket (sock2);
-  cc.AddSocket (sock3);
+  std::vector<Address>::const_iterator it;
+
+  for (it = m_address.begin(); it < m_address.end(); ++it) {
+    Ptr<Socket> socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+    socket->Bind();
+    socket->Connect (*it);
+    cc.AddSocket (socket);
+  }
+
+
+//   Ptr<Socket> sock2 = Socket::CreateSocket(GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+//   sock2->Bind();
+//   sock2->Connect (m_address);
+// 
+//   Ptr<Socket> sock3 = Socket::CreateSocket(GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+//   sock3->Bind();
+//   sock3->Connect (m_address);
+
+//   cc.AddSocket (sock2);
+//   cc.AddSocket (sock3);
 
   Ptr<Packet> packet = Create<Packet> (1000);
   NS_LOG_INFO ("Packet size: " << packet->GetSize ());
 
   cc.Msend(packet);
 
-  Ptr<Packet> packet2 = Create<Packet> (900);
-  cc.Msend (packet2);
-
-  static int i = 0;
-
-  if (i == 0) {
-    Time t (Seconds (2));
-    Simulator::Schedule (t, &CacheCastTestApplication::StartApplication, this);
-  }
-  i++;
+//   Ptr<Packet> packet2 = Create<Packet> (900);
+//   cc.Msend (packet2);
+// 
+//   static int i = 0;
+// 
+//   if (i == 0) {
+//     Time t (Seconds (2));
+//     Simulator::Schedule (t, &CacheCastTestApplication::StartApplication, this);
+//   }
+//   i++;
 
 
 

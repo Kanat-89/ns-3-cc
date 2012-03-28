@@ -1,0 +1,151 @@
+\documentclass[journal]{IEEEtran}
+%
+% If IEEEtran.cls has not been installed into the LaTeX system files,
+% manually specify the path to it like:
+% \documentclass[journal]{../sty/IEEEtran}
+
+\makeatletter
+\def\markboth#1#2{\def\leftmark{\@IEEEcompsoconly{\sffamily}\MakeUppercase{\protect#1}}%
+\def\rightmark{\@IEEEcompsoconly{\sffamily}\MakeUppercase{\protect#2}}}
+\makeatother
+
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[norsk,english]{babel}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{varioref}
+\usepackage{color}
+\usepackage{listings}
+
+%\usepackage[cmex10]{amsmath}
+%\usepackage{algorithmic}
+%\usepackage{array}
+%\usepackage{mdwmath}
+%\usepackage{mdwtab}
+%\usepackage[tight,footnotesize]{subfigure}
+%\usepackage[caption=false]{caption}
+%\usepackage[font=footnotesize]{subfig}
+%\usepackage[caption=false,font=footnotesize]{subfig}
+%\usepackage{fixltx2e}
+%\usepackage{stfloats}
+
+% correct bad hyphenation here
+\hyphenation{net-works}
+
+
+\begin{document}
+
+\title{Implementation of CacheCast\\ in the ns-3 network simulator}
+
+\author{Rizwan~Ali~Ahmed,~
+        Kanat~Sarsekeyev,~
+        Bekzahan~Kassymbekov,~
+        and~Dag~Henning~Liodden~Sørbø}% <-this % stops a space
+
+% \thanks{J. Doe and J. Doe are with Anonymous University.}% <-this % stops a space
+% \thanks{Manuscript received April 19, 2005; revised January 11, 2007.}}
+
+% The paper headers
+% \markboth{Journal of \LaTeX\ Class Files,~Vol.~6, No.~1, January~2007}%
+% {Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for Journals}
+
+
+%%---------------------------------------------------------------------------%%
+% make the title area
+\maketitle
+
+
+\begin{abstract}
+The abstract goes here.
+\end{abstract}
+
+
+% \begin{IEEEkeywords}
+% IEEEtran, journal, \LaTeX, paper, template.
+% \end{IEEEkeywords}
+
+
+\section{Introduction}
+\IEEEPARstart{T}{his} demo file is intended to serve as a ``starter file''
+for IEEE journal papers produced under \LaTeX\ using
+IEEEtran.cls version 1.7 and later.
+
+I wish you the best of success.
+
+
+\subsection{Subsection Heading Here}
+Subsection text here.
+
+\subsubsection{Subsubsection Heading Here}
+Subsubsection text here.
+
+
+
+
+\section{Server support}
+The CacheCast system relies on CacheCast support on the sender in order to 
+remove redundant payload in the network. 
+
+
+\subsection{CacheCastServerNetDevice}
+The \texttt{CacheCastServerNetDevice} is the 
+
+
+%\begin{figure}[!t]
+%\centering
+%\includegraphics[width=2.5in]{myfigure}
+%\caption{Simulation Results}
+%\label{fig_sim}
+%\end{figure}
+
+%\begin{table}[!t]
+%% increase table row spacing, adjust to taste
+%\renewcommand{\arraystretch}{1.3}
+% if using array.sty, it might be a good idea to tweak the value of
+% \extrarowheight as needed to properly center the text within the cells
+%\caption{An Example of a Table}
+%\label{table_example}
+%\centering
+%% Some packages, such as MDW tools, offer better commands for making tables
+%% than the plain LaTeX2e tabular which is used here.
+%\begin{tabular}{|c||c|}
+%\hline
+%One & Two\\
+%\hline
+%Three & Four\\
+%\hline
+%\end{tabular}
+%\end{table}
+
+
+\section{Conclusion}
+The conclusion goes here.
+
+
+
+% \appendices
+% \section{Proof of the First Zonklar Equation}
+% Appendix one text goes here.
+% 
+% % you can choose not to have a title for an appendix
+% % if you want by leaving the argument blank
+% \section{}
+% Appendix two text goes here.
+
+
+\section*{Acknowledgment}
+The authors would like to thank...
+% references section
+
+%\bibliographystyle{IEEEtran}
+% argument is your BibTeX string definitions and bibliography database(s)
+%\bibliography{IEEEabrv,../bib/paper}
+
+
+%%---------------------------------------------------------------------------%%
+\end{document}
+

@@ -60,7 +60,7 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
 
   if (ccTag.IsLastPacket ())
   {
-    NS_LOG_DEBUG ("Last CacheCast packet");
+    NS_LOG_DEBUG ("Send() received the last CacheCast packet " << packet);
     uint32_t payloadId = ccp->CalculateNewPayloadId ();
 
     // Get all CacheCastServerNetDevice on node and issue a FinishSend ()
@@ -73,10 +73,10 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
         bool ret = ccDev->FinishSend (payloadId);
         
         if (ret == true)
-          NS_LOG_DEBUG ("All CacheCast packets sent from device " << ccDev);
+          NS_LOG_DEBUG ("All CacheCast packets were sent from device " << ccDev);
         else
         {
-          NS_LOG_DEBUG ("Not all CacheCast packets were sent from device " << ccDev);
+          NS_LOG_DEBUG ("Not all CacheCast packets were sent from device " << ccDev << "due to an error");
           retValue = false;
         }
       }

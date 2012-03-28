@@ -24,8 +24,9 @@ namespace ns3 {
 
 CacheCastServerHelper::CacheCastServerHelper ()
 {
+  //TODO change to CacheCastNetDevice
+  m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
   m_queueFactory.SetTypeId ("ns3::DropTailQueue");
-  m_ccQueueFactory.SetTypeId ("ns3::DropTailQueue");
   m_ccDeviceFactory.SetTypeId ("ns3::CacheCastServerNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
   m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
@@ -48,7 +49,9 @@ CacheCastServerHelper::CacheCastServerHelper ()
 void 
 CacheCastServerHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
-  m_ccDeviceFactory.Set (n1, v1);
+  // TODO enable and check inheritance of attributes
+//   m_ccDeviceFactory.Set (n1, v1);
+  m_deviceFactory.Set (n1, v1);
 }
 
 void 
@@ -199,28 +202,37 @@ CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue
 //   Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDropSinkWithContext, stream));
 // }
 
-Ptr<CacheCastServerNetDevice>
-CacheCastServerHelper::Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nodeDevice)
+NetDeviceContainer
+CacheCastServerHelper::Install (Ptr<Node> server, Ptr<Node> node)
 {
   // TODO this will be handled when CacheCastNetDevice is ready
   // Assuming a Queue and an Address is assigned to the nodeDevice
-  NS_ASSERT (nodeDevice != 0);
+  NS_ASSERT (node != 0);
   NS_ASSERT (server != 0);
 
-  Ptr<CacheCastServerNetDevice> ccDevice = m_ccDeviceFactory.Create<CacheCastServerNetDevice> ();
-  ccDevice->SetAddress (Mac48Address::Allocate ());
-  server->AddDevice (ccDevice);
-  
+  /* Add a CacheCastPid to the server node */
   if (!server->GetObject<CacheCastPid> ()) {
     Ptr<CacheCastPid> ccp = Create<CacheCastPid> ();
     server->AggregateObject(ccp);
   }
 
-  Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
-  ccDevice->SetQueue (queue);
-//   Ptr<Queue> ccQueue = m_ccQueueFactory.Create<Queue> ();
-//   ccDevice->SetCacheCastQueue (ccQueue);
+  NetDeviceContainer container;
 
+  /* Setup server */
+  Ptr<CacheCastServerNetDevice> ccDevice = m_ccDeviceFactory.Create<CacheCastServerNetDevice> ();
+  Ptr<Queue> serverQueue = m_queueFactory.Create<Queue> ();
+  ccDevice->SetAddress (Mac48Address::Allocate ());
+  ccDevice->SetQueue (serverQueue);
+  server->AddDevice (ccDevice);
+
+  /* Setup node */
+  //TODO change to CacheCastNetDevice
+  Ptr<PointToPointNetDevice> nodeDevice = m_deviceFactory.Create<PointToPointNetDevice> ();
+  Ptr<Queue> nodeQueue = m_queueFactory.Create<Queue> ();
+  nodeDevice->SetAddress (Mac48Address::Allocate ());
+  nodeDevice->SetQueue(nodeQueue);
+  node->AddDevice (nodeDevice);
+  
   // If MPI is enabled, we need to see if both nodes have the same system id 
   // (rank), and the rank is the same as this instance.  If both are true, 
   //use a normal p2p channel, otherwise use a remote channel
@@ -229,7 +241,7 @@ CacheCastServerHelper::Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nod
   if (MpiInterface::IsEnabled ())
     {
       uint32_t n1SystemId = server->GetSystemId ();
-      uint32_t n2SystemId = nodeDevice->GetNode ()->GetSystemId ();
+      uint32_t n2SystemId = node->GetSystemId ();
       uint32_t currSystemId = MpiInterface::GetSystemId ();
       if (n1SystemId != currSystemId || n2SystemId != currSystemId) 
         {
@@ -246,6 +258,7 @@ CacheCastServerHelper::Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nod
       Ptr<MpiReceiver> mpiRecA = CreateObject<MpiReceiver> ();
       Ptr<MpiReceiver> mpiRecB = CreateObject<MpiReceiver> ();
       mpiRecA->SetReceiveCallback (MakeCallback (&CacheCastServerNetDevice::Receive, ccDevice));
+      //TODO change next line
       mpiRecB->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, nodeDevice));
       ccDevice->AggregateObject (mpiRecA);
       nodeDevice->AggregateObject (mpiRecB);
@@ -253,17 +266,19 @@ CacheCastServerHelper::Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nod
 
   ccDevice->Attach (channel);
   nodeDevice->Attach (channel);
+  container.Add (ccDevice);
+  container.Add (nodeDevice);
 
-  return ccDevice;
+  return container;
 }
 
-// NetDeviceContainer 
-// CacheCastServerHelper::Install (NodeContainer c)
-// {
-//   NS_ASSERT (c.GetN () == 2);
-//   return Install (c.Get (0), c.Get (1));
-// }
-// 
+NetDeviceContainer 
+CacheCastServerHelper::Install (NodeContainer c)
+{
+  NS_ASSERT (c.GetN () == 2);
+  return Install (c.Get (0), c.Get (1));
+}
+
 // NetDeviceContainer 
 // CacheCastServerHelper::Install (Ptr<Node> a, Ptr<Node> b)
 // {

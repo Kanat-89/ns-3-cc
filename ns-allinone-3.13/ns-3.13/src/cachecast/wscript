@@ -21,7 +21,7 @@ def build(bld):
     module_test = bld.create_ns3_module_test_library('cachecast')
     module_test.source = [
         'test/cachecast-test-suite.cc',
-        'test/cachecast-example2.cc',
+#         'test/cachecast-example2.cc',
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])

@@ -13,13 +13,13 @@ class CacheCastTestApplication : public Application
 public:
   static TypeId GetTypeId (void);
   CacheCastTestApplication ();
-  void SetAddress (Address address);
+  void AddAddress (Address address);
 private:
   void SocketFailed (uint32_t socketIndex);
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
-  Address m_address;
+  std::vector<Address> m_address;
 };
 
 } // namespace ns3

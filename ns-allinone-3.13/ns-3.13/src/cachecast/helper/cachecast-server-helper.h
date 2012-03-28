@@ -85,27 +85,24 @@ public:
   void SetChannelAttribute (std::string name, const AttributeValue &value);
 
   /**
-   * \param server the node to install CacheCast server support onto
-   * \param node a NetDevice on a node which the server should be connected to.
-   *
    * This method creates a ns3::CacheCastServerNetDevice on the server,
-   * creates a ns3::PointToPointChannel, and connects the CacheCastServerNetDevice
-   * and the TODO PointToPointNetDevice to the PointToPointChannel.
+   * creates a ns3::CacheCastNetDevice on the node, and connects the 
+   * CacheCastServerNetDevice and the CacheCastNetDevice to the PointToPointChannel.
+   *
+   * \param server the node to install CacheCast server support onto
+   * \param node a node which the server should be connected to.
    */
-  // TODO change PointToPointNetDevice to CacheCastNetDevice
-  Ptr<CacheCastServerNetDevice> Install (Ptr<Node> server, Ptr<PointToPointNetDevice> nodeDevice);
+  NetDeviceContainer Install (Ptr<Node> server, Ptr<Node> node);
 
   /**
    * \param c a set of nodes
    *
-   * This method creates a ns3::PointToPointChannel with the
-   * attributes configured by CacheCastServerHelper::SetChannelAttribute,
-   * then, for each node in the input container, we create a 
+   * For the first node in the input container, we create a 
    * ns3::CacheCastServerNetDevice with the requested attributes, 
-   * a queue for this ns3::NetDevice, and associate the resulting 
-   * ns3::NetDevice with the ns3::Node and ns3::PointToPointChannel.
+   * a queue for this ns3::NetDevice, for the second node, we create a
+   * CacheCastNetDevice, and connect these two together with a ns3::PointToPointChannel
    */
-//   NetDeviceContainer Install (NodeContainer c);
+  NetDeviceContainer Install (NodeContainer c);
 
   /**
    * \param a first node
@@ -172,8 +169,8 @@ private:
 //     Ptr<NetDevice> nd,
 //     bool explicitFilename);
 
+  ObjectFactory m_deviceFactory;
   ObjectFactory m_ccDeviceFactory;
-  ObjectFactory m_ccQueueFactory;
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;
   ObjectFactory m_remoteChannelFactory;
