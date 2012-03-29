@@ -36,6 +36,23 @@ main (int argc, char *argv[])
 //   cmd.AddValue ("verbose", "Tell application to log if true", verbose);
 //   cmd.Parse (argc,argv);
 
+
+// Ptr<Packet> packet = Create<Packet> (1000);
+// UdpHeader uh;
+// CacheCastHeader cch (111, 222, true);
+// PppHeader ppp;
+// 
+// packet->AddHeader (uh);
+// packet->AddHeader (cch);
+// packet->AddHeader (ppp);
+// 
+// packet->RemoveHeader (ppp);
+// CacheCastHeader cch2;
+// packet->RemoveHeader (cch2);
+// cch2.Print(std::cerr);
+// 
+// return 0;
+
   NodeContainer nodes;
   nodes.Create (3);
 
@@ -78,10 +95,11 @@ main (int argc, char *argv[])
   Ptr<CacheCastTestApplication> app = Create<CacheCastTestApplication> ();
   Address addr1 (InetSocketAddress (interfaces1.GetAddress (1), 9));
   Address addr2 (InetSocketAddress (interfaces2.GetAddress (1), 9));
-  Address addr3 (InetSocketAddress (interfaces2.GetAddress (1), 9));
   app->AddAddress (addr1);
   app->AddAddress (addr2);
-  app->AddAddress (addr3);
+  app->AddAddress (addr2);
+  app->AddAddress (addr1);
+  app->AddAddress (addr1);
   nodes.Get (0)->AddApplication (app);
   app->SetStartTime (Seconds (2.0));
   app->SetStopTime (Seconds (10.0));

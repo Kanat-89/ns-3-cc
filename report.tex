@@ -70,56 +70,73 @@ The abstract goes here.
 
 
 \section{Introduction}
-\IEEEPARstart{T}{his} demo file is intended to serve as a ``starter file''
-for IEEE journal papers produced under \LaTeX\ using
-IEEEtran.cls version 1.7 and later.
+\IEEEPARstart{T}{he} goal of this project...
 
-I wish you the best of success.
+Bla bla... 
 
 
-\subsection{Subsection Heading Here}
-Subsection text here.
 
-\subsubsection{Subsubsection Heading Here}
-Subsubsection text here.
+\section{CacheCast}
 
+
+\section{ns-3}
+
+
+\section{Common data structures}
+
+\subsection{CacheCast header}
+
+\subsection{CacheCast packet tag}
+
+
+
+\section{Network support}
 
 
 
 \section{Server support}
-The CacheCast system relies on CacheCast support on the sender in order to 
-remove redundant payload in the network. 
+The CacheCast system relies on CacheCast support on the server in order to 
+remove redundant payload in the network. This server support should send all 
+packets sequentially onto the link and truncate all packets beside the first 
+one. This removes redundant payload from the link and forms a packet train.
 
+In the Linux operating system this functionality is provided through a system 
+call (\texttt{msend}) and a kernel module. In the ns-3 network simulator there 
+is no abstraction of an (operating) system. Hence, this server support mechanism must 
+be handled in a different way than in the Linux operating system.
 
-\subsection{CacheCastServerNetDevice}
+The CacheCast server support consists mainly of two parts; the interface to the 
+applications and the underlying packet handling mechanisms. The implementation 
+in ns-3 closely resembles this division. The API exposed to the applications is 
+discussed in section \ref{api} and the underlying handling of 
+packets and addition of the CacheCast header is discussed in the following section.
+
+\subsection{give a name...}
+The tasks of the underlying packet handling mechanism in CacheCast is to ensure 
+that the packets are put onto the link in a tight chain and to add the CacheCast 
+header to each packet. In the Linux implementation of CacheCast this mechanism 
+is handled by a kernel module located between the network layer and the link 
+layer. In the ns-3 network simulator the abstraction of the physical and the 
+data link layer is modeled together in a NetDevice. This NetDevice receives a 
+packet from the network layer 
+
 The \texttt{CacheCastServerNetDevice} is the 
 
+CacheCastPid
 
-%\begin{figure}[!t]
-%\centering
-%\includegraphics[width=2.5in]{myfigure}
-%\caption{Simulation Results}
-%\label{fig_sim}
-%\end{figure}
 
-%\begin{table}[!t]
-%% increase table row spacing, adjust to taste
-%\renewcommand{\arraystretch}{1.3}
-% if using array.sty, it might be a good idea to tweak the value of
-% \extrarowheight as needed to properly center the text within the cells
-%\caption{An Example of a Table}
-%\label{table_example}
-%\centering
-%% Some packages, such as MDW tools, offer better commands for making tables
-%% than the plain LaTeX2e tabular which is used here.
-%\begin{tabular}{|c||c|}
-%\hline
-%One & Two\\
-%\hline
-%Three & Four\\
-%\hline
-%\end{tabular}
-%\end{table}
+\subsection{Application programming interface (API)\label{api}}
+
+- first suggestion
+- second suggestion
+- what we ended up doing
+
+
+
+\section{Helpers}
+
+
+\section{Evaluation}
 
 
 \section{Conclusion}
@@ -148,4 +165,33 @@ The authors would like to thank...
 
 %%---------------------------------------------------------------------------%%
 \end{document}
+
+
+% EXAMPLES
+
+%\begin{figure}[!t]
+%\centering
+%\includegraphics[width=2.5in]{myfigure}
+%\caption{Simulation Results}
+%\label{fig_sim}
+%\end{figure}
+
+%\begin{table}[!t]
+%% increase table row spacing, adjust to taste
+%\renewcommand{\arraystretch}{1.3}
+% if using array.sty, it might be a good idea to tweak the value of
+% \extrarowheight as needed to properly center the text within the cells
+%\caption{An Example of a Table}
+%\label{table_example}
+%\centering
+%% Some packages, such as MDW tools, offer better commands for making tables
+%% than the plain LaTeX2e tabular which is used here.
+%\begin{tabular}{|c||c|}
+%\hline
+%One & Two\\
+%\hline
+%Three & Four\\
+%\hline
+%\end{tabular}
+%\end{table}
 
