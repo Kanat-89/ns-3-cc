@@ -83,8 +83,49 @@ Bla bla...
 
 
 \section{Common data structures}
+In this section we explain the common data structures used by the different 
+parts of the ns-3 implementation of CacheCast. These data structures are the 
+CacheCast header and the CacheCast packet tag.
 
 \subsection{CacheCast header}
+The CacheCast header is represented in ns-3 as a class named CacheCastHeader. 
+This class is derived from the general ns3::Header class. The class 
+
+\begin{footnotesize}
+\begin{lstlisting}[language=C]
+--------------------------------------------------
+#include "ns3/header.h"
+
+namespace ns3 {
+class CacheCastHeader : public Header
+{
+public:
+  CacheCastHeader ();
+  CacheCastHeader (uint32_t payloadId, 
+    uint32_t payloadSize, uint32_t index);
+  uint32_t GetPayloadId (void) const;
+  uint32_t GetPayloadSize (void) const;
+  uint32_t GetIndex (void) const;
+  void SetPayloadId (uint32_t payloadId);
+  void SetPayloadSize (uint32_t payloadSize);
+  void SetIndex (uint32_t index);
+
+  static TypeId GetTypeId (void);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
+private:
+  uint32_t m_payloadId;
+  uint32_t m_payloadSize;
+  uint32_t m_index;
+};
+}
+--------------------------------------------------
+\end{lstlisting}
+\end{footnotesize}
+
 
 \subsection{CacheCast packet tag}
 
@@ -111,14 +152,28 @@ in ns-3 closely resembles this division. The API exposed to the applications is
 discussed in section \ref{api} and the underlying handling of 
 packets and addition of the CacheCast header is discussed in the following section.
 
-\subsection{give a name...}
+\subsection{Underlying packet handling mechanism}
 The tasks of the underlying packet handling mechanism in CacheCast is to ensure 
 that the packets are put onto the link in a tight chain and to add the CacheCast 
 header to each packet. In the Linux implementation of CacheCast this mechanism 
 is handled by a kernel module located between the network layer and the link 
 layer. In the ns-3 network simulator the abstraction of the physical and the 
-data link layer is modeled together in a NetDevice. This NetDevice receives a 
-packet from the network layer 
+data link layer is modeled by a NetDevice. This NetDevice receives a 
+packet from the network layer, adds link layer headers, and puts the packet onto 
+the channel. Because of this design we have chosen to create a new NetDevice 
+which supports CacheCast. This NetDevice is called CacheCastServerNetDevice and 
+is derived from the PointToPointNetDevice. Since CacheCastServerNetDevice has 
+PointToPointNetDevice as a base class we can take advantage of the already 
+existing features in the PointToPointNetDevice. And since CacheCast is only supported on 
+point-to-point links the CacheCastServerNetDevice need not be generalized into 
+supporting arbitrary link level technologies.
+
+In the Linux implementation the CacheCast packets is intercepted just before the 
+link layer. In our implementation in ns-3 this interception will happen in the 
+NetDevice. All NetDevices in ns-3 have a virtual function called Send(). This function is 
+called from the network layer with the packet as an argument and this is where 
+we will intercept the packet.
+
 
 The \texttt{CacheCastServerNetDevice} is the 
 
