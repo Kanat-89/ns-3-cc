@@ -5,9 +5,9 @@
 #include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include "ns3/point-to-point-net-device.h"
-#include "ns3/point-to-point-channel.h"
-#include "ns3/point-to-point-remote-channel.h"
+#include "ns3/cachecast-net-device.h"
+#include "ns3/cachecast-channel.h"
+// #include "ns3/point-to-point-remote-channel.h"
 #include "ns3/queue.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
@@ -25,11 +25,11 @@ namespace ns3 {
 CacheCastServerHelper::CacheCastServerHelper ()
 {
   //TODO change to CacheCastNetDevice
-  m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
+  m_deviceFactory.SetTypeId ("ns3::CacheCastNetDevice");
   m_queueFactory.SetTypeId ("ns3::DropTailQueue");
-  m_ccDeviceFactory.SetTypeId ("ns3::CacheCastServerNetDevice");
-  m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
-  m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
+  m_serverDeviceFactory.SetTypeId ("ns3::CacheCastServerNetDevice");
+  m_channelFactory.SetTypeId ("ns3::CacheCastChannel");
+//   m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
 }
 
 // void 
@@ -50,7 +50,7 @@ void
 CacheCastServerHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
   // TODO enable and check inheritance of attributes
-//   m_ccDeviceFactory.Set (n1, v1);
+//   m_serverDeviceFactory.Set (n1, v1);
   m_deviceFactory.Set (n1, v1);
 }
 
@@ -58,7 +58,7 @@ void
 CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
-  m_remoteChannelFactory.Set (n1, v1);
+//   m_remoteChannelFactory.Set (n1, v1);
 }
 
 // void 
@@ -67,12 +67,12 @@ CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue
 //   //
 //   // All of the Pcap enable functions vector through here including the ones
 //   // that are wandering through all of devices on perhaps all of the nodes in
-//   // the system.  We can only deal with devices of type PointToPointNetDevice.
+//   // the system.  We can only deal with devices of type CacheCastNetDevice.
 //   //
-//   Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice> ();
+//   Ptr<CacheCastNetDevice> device = nd->GetObject<CacheCastNetDevice> ();
 //   if (device == 0)
 //     {
-//       NS_LOG_INFO ("CacheCastServerHelper::EnablePcapInternal(): Device " << device << " not of type ns3::PointToPointNetDevice");
+//       NS_LOG_INFO ("CacheCastServerHelper::EnablePcapInternal(): Device " << device << " not of type ns3::CacheCastNetDevice");
 //       return;
 //     }
 // 
@@ -90,7 +90,7 @@ CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue
 // 
 //   Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, 
 //                                                      PcapHelper::DLT_PPP);
-//   pcapHelper.HookDefaultSink<PointToPointNetDevice> (device, "PromiscSniffer", file);
+//   pcapHelper.HookDefaultSink<CacheCastNetDevice> (device, "PromiscSniffer", file);
 // }
 
 // void 
@@ -103,13 +103,13 @@ CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue
 //   //
 //   // All of the ascii enable functions vector through here including the ones
 //   // that are wandering through all of devices on perhaps all of the nodes in
-//   // the system.  We can only deal with devices of type PointToPointNetDevice.
+//   // the system.  We can only deal with devices of type CacheCastNetDevice.
 //   //
-//   Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice> ();
+//   Ptr<CacheCastNetDevice> device = nd->GetObject<CacheCastNetDevice> ();
 //   if (device == 0)
 //     {
 //       NS_LOG_INFO ("CacheCastServerHelper::EnableAsciiInternal(): Device " << device << 
-//                    " not of type ns3::PointToPointNetDevice");
+//                    " not of type ns3::CacheCastNetDevice");
 //       return;
 //     }
 // 
@@ -149,7 +149,7 @@ CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue
 //       //
 //       // The MacRx trace source provides our "r" event.
 //       //
-//       asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<PointToPointNetDevice> (device, "MacRx", theStream);
+//       asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<CacheCastNetDevice> (device, "MacRx", theStream);
 // 
 //       //
 //       // The "+", '-', and 'd' events are driven by trace sources actually in the
@@ -161,7 +161,7 @@ CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue
 //       asciiTraceHelper.HookDefaultDequeueSinkWithoutContext<Queue> (queue, "Dequeue", theStream);
 // 
 //       // PhyRxDrop trace source for "d" event
-//       asciiTraceHelper.HookDefaultDropSinkWithoutContext<PointToPointNetDevice> (device, "PhyRxDrop", theStream);
+//       asciiTraceHelper.HookDefaultDropSinkWithoutContext<CacheCastNetDevice> (device, "PhyRxDrop", theStream);
 // 
 //       return;
 //     }
@@ -182,23 +182,23 @@ CacheCastServerHelper::SetChannelAttribute (std::string n1, const AttributeValue
 //   uint32_t deviceid = nd->GetIfIndex ();
 //   std::ostringstream oss;
 // 
-//   oss << "/NodeList/" << nd->GetNode ()->GetId () << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/MacRx";
+//   oss << "/NodeList/" << nd->GetNode ()->GetId () << "/DeviceList/" << deviceid << "/$ns3::CacheCastNetDevice/MacRx";
 //   Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultReceiveSinkWithContext, stream));
 // 
 //   oss.str ("");
-//   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Enqueue";
+//   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CacheCastNetDevice/TxQueue/Enqueue";
 //   Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultEnqueueSinkWithContext, stream));
 // 
 //   oss.str ("");
-//   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Dequeue";
+//   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CacheCastNetDevice/TxQueue/Dequeue";
 //   Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDequeueSinkWithContext, stream));
 // 
 //   oss.str ("");
-//   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Drop";
+//   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CacheCastNetDevice/TxQueue/Drop";
 //   Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDropSinkWithContext, stream));
 // 
 //   oss.str ("");
-//   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/PhyRxDrop";
+//   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CacheCastNetDevice/PhyRxDrop";
 //   Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDropSinkWithContext, stream));
 // }
 
@@ -219,54 +219,24 @@ CacheCastServerHelper::Install (Ptr<Node> server, Ptr<Node> node)
   NetDeviceContainer container;
 
   /* Setup server */
-  Ptr<CacheCastServerNetDevice> ccDevice = m_ccDeviceFactory.Create<CacheCastServerNetDevice> ();
+  Ptr<CacheCastServerNetDevice> serverDevice = m_serverDeviceFactory.Create<CacheCastServerNetDevice> ();
   Ptr<Queue> serverQueue = m_queueFactory.Create<Queue> ();
-  ccDevice->SetAddress (Mac48Address::Allocate ());
-  ccDevice->SetQueue (serverQueue);
-  server->AddDevice (ccDevice);
+  serverDevice->SetAddress (Mac48Address::Allocate ());
+  serverDevice->SetQueue (serverQueue);
+  server->AddDevice (serverDevice);
 
   /* Setup node */
   //TODO change to CacheCastNetDevice
-  Ptr<PointToPointNetDevice> nodeDevice = m_deviceFactory.Create<PointToPointNetDevice> ();
+  Ptr<CacheCastNetDevice> nodeDevice = m_deviceFactory.Create<CacheCastNetDevice> ();
   Ptr<Queue> nodeQueue = m_queueFactory.Create<Queue> ();
   nodeDevice->SetAddress (Mac48Address::Allocate ());
   nodeDevice->SetQueue(nodeQueue);
   node->AddDevice (nodeDevice);
   
-  // If MPI is enabled, we need to see if both nodes have the same system id 
-  // (rank), and the rank is the same as this instance.  If both are true, 
-  //use a normal p2p channel, otherwise use a remote channel
-  bool useNormalChannel = true;
-  Ptr<PointToPointChannel> channel = 0;
-  if (MpiInterface::IsEnabled ())
-    {
-      uint32_t n1SystemId = server->GetSystemId ();
-      uint32_t n2SystemId = node->GetSystemId ();
-      uint32_t currSystemId = MpiInterface::GetSystemId ();
-      if (n1SystemId != currSystemId || n2SystemId != currSystemId) 
-        {
-          useNormalChannel = false;
-        }
-    }
-  if (useNormalChannel)
-    {
-      channel = m_channelFactory.Create<PointToPointChannel> ();
-    }
-  else
-    {
-      channel = m_remoteChannelFactory.Create<PointToPointRemoteChannel> ();
-      Ptr<MpiReceiver> mpiRecA = CreateObject<MpiReceiver> ();
-      Ptr<MpiReceiver> mpiRecB = CreateObject<MpiReceiver> ();
-      mpiRecA->SetReceiveCallback (MakeCallback (&CacheCastServerNetDevice::Receive, ccDevice));
-      //TODO change next line
-      mpiRecB->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, nodeDevice));
-      ccDevice->AggregateObject (mpiRecA);
-      nodeDevice->AggregateObject (mpiRecB);
-    }
-
-  ccDevice->Attach (channel);
+  Ptr<CacheCastChannel> channel = m_channelFactory.Create<CacheCastChannel> ();
+  serverDevice->Attach (channel);
   nodeDevice->Attach (channel);
-  container.Add (ccDevice);
+  container.Add (serverDevice);
   container.Add (nodeDevice);
 
   return container;
@@ -278,81 +248,6 @@ CacheCastServerHelper::Install (NodeContainer c)
   NS_ASSERT (c.GetN () == 2);
   return Install (c.Get (0), c.Get (1));
 }
-
-// NetDeviceContainer 
-// CacheCastServerHelper::Install (Ptr<Node> a, Ptr<Node> b)
-// {
-//   NetDeviceContainer container;
-// 
-//   Ptr<PointToPointNetDevice> devA = m_deviceFactory.Create<PointToPointNetDevice> ();
-//   devA->SetAddress (Mac48Address::Allocate ());
-//   a->AddDevice (devA);
-//   Ptr<Queue> queueA = m_queueFactory.Create<Queue> ();
-//   devA->SetQueue (queueA);
-//   Ptr<PointToPointNetDevice> devB = m_deviceFactory.Create<PointToPointNetDevice> ();
-//   devB->SetAddress (Mac48Address::Allocate ());
-//   b->AddDevice (devB);
-//   Ptr<Queue> queueB = m_queueFactory.Create<Queue> ();
-//   devB->SetQueue (queueB);
-//   // If MPI is enabled, we need to see if both nodes have the same system id 
-//   // (rank), and the rank is the same as this instance.  If both are true, 
-//   //use a normal p2p channel, otherwise use a remote channel
-//   bool useNormalChannel = true;
-//   Ptr<PointToPointChannel> channel = 0;
-//   if (MpiInterface::IsEnabled ())
-//     {
-//       uint32_t n1SystemId = a->GetSystemId ();
-//       uint32_t n2SystemId = b->GetSystemId ();
-//       uint32_t currSystemId = MpiInterface::GetSystemId ();
-//       if (n1SystemId != currSystemId || n2SystemId != currSystemId) 
-//         {
-//           useNormalChannel = false;
-//         }
-//     }
-//   if (useNormalChannel)
-//     {
-//       channel = m_channelFactory.Create<PointToPointChannel> ();
-//     }
-//   else
-//     {
-//       channel = m_remoteChannelFactory.Create<PointToPointRemoteChannel> ();
-//       Ptr<MpiReceiver> mpiRecA = CreateObject<MpiReceiver> ();
-//       Ptr<MpiReceiver> mpiRecB = CreateObject<MpiReceiver> ();
-//       mpiRecA->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, devA));
-//       mpiRecB->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, devB));
-//       devA->AggregateObject (mpiRecA);
-//       devB->AggregateObject (mpiRecB);
-//     }
-// 
-//   devA->Attach (channel);
-//   devB->Attach (channel);
-//   container.Add (devA);
-//   container.Add (devB);
-// 
-//   return container;
-// }
-// 
-// NetDeviceContainer 
-// CacheCastServerHelper::Install (Ptr<Node> a, std::string bName)
-// {
-//   Ptr<Node> b = Names::Find<Node> (bName);
-//   return Install (a, b);
-// }
-// 
-// NetDeviceContainer 
-// CacheCastServerHelper::Install (std::string aName, Ptr<Node> b)
-// {
-//   Ptr<Node> a = Names::Find<Node> (aName);
-//   return Install (a, b);
-// }
-// 
-// NetDeviceContainer 
-// CacheCastServerHelper::Install (std::string aName, std::string bName)
-// {
-//   Ptr<Node> a = Names::Find<Node> (aName);
-//   Ptr<Node> b = Names::Find<Node> (bName);
-//   return Install (a, b);
-// }
 
 } // namespace ns3
 

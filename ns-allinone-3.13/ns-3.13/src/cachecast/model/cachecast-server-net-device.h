@@ -2,7 +2,7 @@
 #ifndef __CACHECAST_SERVER_NET_DEVICE_H__
 #define __CACHECAST_SERVER_NET_DEVICE_H__
 
-#include "ns3/point-to-point-net-device.h"
+#include "cachecast-net-device.h"
 #include "ns3/queue.h"
 #include "ns3/callback.h"
 #include <vector>
@@ -12,7 +12,7 @@ namespace ns3 {
 /**
  * /brief CacheCast NetDevice
  */
-class CacheCastServerNetDevice : public PointToPointNetDevice
+class CacheCastServerNetDevice : public CacheCastNetDevice
 {
 public:
   /**

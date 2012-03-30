@@ -15,7 +15,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (CacheCastServerNetDevice);
 
 CacheCastServerNetDevice::CacheCastServerNetDevice ()
-  : PointToPointNetDevice()
+  : CacheCastNetDevice()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -24,7 +24,7 @@ TypeId
 CacheCastServerNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CacheCastServerNetDevice")
-    .SetParent<PointToPointNetDevice> ()
+    .SetParent<CacheCastNetDevice> ()
     .AddConstructor<CacheCastServerNetDevice> ()
   ;
   return tid;
@@ -120,7 +120,7 @@ CacheCastServerNetDevice::FinishSend (uint32_t payloadId)
     NS_LOG_DEBUG ("CacheCast: Sending packet " << it->packet << " " <<
         it->dest << " " << it->protocolNumber);
 
-    bool ret = PointToPointNetDevice::Send (it->packet, it->dest, it->protocolNumber);
+    bool ret = CacheCastNetDevice::Send (it->packet, it->dest, it->protocolNumber);
 
     /* If the packet failed to be sent onto the link, add index to failed vector */
     if (ret == false)

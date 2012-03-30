@@ -79,7 +79,7 @@ public:
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set
    *
-   * Set these attribute on each ns3::PointToPointChannel created
+   * Set these attribute on each ns3::CacheCastChannel created
    * by CacheCastServerHelper::Install
    */
   void SetChannelAttribute (std::string name, const AttributeValue &value);
@@ -87,7 +87,7 @@ public:
   /**
    * This method creates a ns3::CacheCastServerNetDevice on the server,
    * creates a ns3::CacheCastNetDevice on the node, and connects the 
-   * CacheCastServerNetDevice and the CacheCastNetDevice to the PointToPointChannel.
+   * CacheCastServerNetDevice and the CacheCastNetDevice to the CacheCastChannel.
    *
    * \param server the node to install CacheCast server support onto
    * \param node a node which the server should be connected to.
@@ -100,7 +100,7 @@ public:
    * For the first node in the input container, we create a 
    * ns3::CacheCastServerNetDevice with the requested attributes, 
    * a queue for this ns3::NetDevice, for the second node, we create a
-   * CacheCastNetDevice, and connect these two together with a ns3::PointToPointChannel
+   * CacheCastNetDevice, and connect these two together with a ns3::CacheCastChannel
    */
   NetDeviceContainer Install (NodeContainer c);
 
@@ -170,10 +170,10 @@ private:
 //     bool explicitFilename);
 
   ObjectFactory m_deviceFactory;
-  ObjectFactory m_ccDeviceFactory;
+  ObjectFactory m_serverDeviceFactory;
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;
-  ObjectFactory m_remoteChannelFactory;
+//   ObjectFactory m_remoteChannelFactory;
 };
 
 } // namespace ns3
