@@ -33,6 +33,7 @@ def build(bld):
         'model/cachecast-tag.h',
         'model/cachecast-pid.h',
         'model/cachecast-header.h',
+        'model/cachecast-element.h',
         'model/cachecast-channel.h',
         'model/cachecast-net-device.h',
         'model/cachecast-test-application.h',
