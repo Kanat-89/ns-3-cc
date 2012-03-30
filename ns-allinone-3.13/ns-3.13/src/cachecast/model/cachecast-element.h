@@ -16,12 +16,7 @@ namespace ns3 {
 class CacheCastElement : public Object
 {
 public:
-  /**
-   * /brief Construct an empty CacheCastElement
-   */
-  CacheCastElement ();
-
-  /**
+   /**
    * \brief This function does some packet manipulation 
    *        specified by the classes implementing it.
    *
@@ -32,7 +27,7 @@ public:
    * \returns true if the manipulation was successful,
    *          false otherwise
    */
-  virtual bool handlePacket (Ptr<Packet> p) = 0;
+  virtual bool HandlePacket (Ptr<Packet> p) = 0;
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
