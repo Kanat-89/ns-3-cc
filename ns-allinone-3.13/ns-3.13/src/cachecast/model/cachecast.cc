@@ -11,16 +11,55 @@ NS_LOG_COMPONENT_DEFINE ("CacheCast");
 namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (CacheCast);
 
+
+CacheCast::Iterator 
+CacheCast::Begin (void) const
+{
+  return m_sockets.begin ();
+}
+
+CacheCast::Iterator 
+CacheCast::End (void) const
+{
+  return m_sockets.end ();
+}
+
+CacheCast::Iterator 
+CacheCast::BeginFailedSockets (void) const
+{
+  return m_failed.begin ();
+}
+
+CacheCast::Iterator 
+CacheCast::EndFailedSockets (void) const
+{
+  return m_failed.end ();
+}
+
 void 
 CacheCast::AddSocket (Ptr<Socket> socket)
 {
     m_sockets.push_back (socket);
 }
 
+void
+CacheCast::RemoveSocket(Ptr<Socket> socket){
+    std::vector<Ptr<Socket> >::iterator vItr = m_sockets.begin();
+    while ( vItr != m_sockets.end() )
+    {
+    if ( (*vItr) == socket )
+    {
+        vItr = m_sockets.erase( vItr ); // Will return next valid iterator
+        break;
+    }
+    else
+        vItr++;
+    }    
+}
+
 bool 
 CacheCast::Msend(Ptr<Packet> packet)
 {
-    //sjekke om socket er udp?
     Ptr<Packet> pack; 
     Ptr<Node> node;
     std::vector<Ptr <Socket> >::iterator socket;
@@ -29,12 +68,10 @@ CacheCast::Msend(Ptr<Packet> packet)
 
     bool lastpacket;
     bool succesful = true;
-    
-    
+     
     for(socket = m_sockets.begin(); socket != m_sockets.end(); ++socket)
-    {
-        
-        NS_ASSERT_MSG ((*socket)->GetSocketType () == Socket::NS3_SOCK_DGRAM, "Beskjed til meg");
+    {        
+        NS_ASSERT_MSG ((*socket)->GetSocketType () == Socket::NS3_SOCK_DGRAM, "This socket is not an UDP socket");
         
         node = (*socket)->GetNode ();
         for (uint32_t i = 0; i < (node->GetNDevices ()); i++)
@@ -54,13 +91,23 @@ CacheCast::Msend(Ptr<Packet> packet)
         if((*socket)->Send(pack) < 0)
         {
            succesful = false;
-           //m_failed[i] = true; 
+           SetFailedSocket (socket_index); 
         }
         socket_index++; 
     }
     
-    
     return succesful; 
+}
+
+void
+CacheCast::Merge(CacheCast cc)
+{
+    std::vector<Ptr<Socket> >::iterator vItr = cc.m_sockets.begin();
+    while ( vItr != cc.m_sockets.end() )
+    {
+        AddSocket((*vItr));
+        vItr++;
+    } 
 }
 
 void

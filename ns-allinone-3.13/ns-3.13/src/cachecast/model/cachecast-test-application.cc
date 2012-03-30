@@ -2,6 +2,7 @@
 
 #include "ns3/log.h"
 #include "ns3/cachecast-module.h"
+#include "cachecast.h"
 #include "ns3/packet.h"
 #include "ns3/address.h"
 #include "ns3/inet-socket-address.h"
@@ -71,7 +72,17 @@ CacheCastTestApplication::StartApplication (void)
     socket->Connect (*it);
     cc.AddSocket (socket);
   }
+ 
+  CacheCast cc2;
 
+  for (it = m_address.begin(); it < m_address.end(); ++it) {
+    Ptr<Socket> socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+    socket->Bind();
+    socket->Connect (*it);
+    cc2.AddSocket (socket);
+  }
+   
+    cc.Merge(cc2);
 
 //   Ptr<Socket> sock2 = Socket::CreateSocket(GetNode (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
 //   sock2->Bind();
@@ -87,7 +98,14 @@ CacheCastTestApplication::StartApplication (void)
   Ptr<Packet> packet = Create<Packet> (1000);
   NS_LOG_INFO ("Packet size: " << packet->GetSize ());
 
-  cc.Msend(packet);
+    if(!cc.Msend(packet)){
+        CacheCast::Iterator vItr = cc.BeginFailedSockets();
+        while ( vItr != cc.EndFailedSockets() )
+        {
+            cc.RemoveSocket( (*vItr) );
+            vItr++;
+        }    
+    }
 
 //   Ptr<Packet> packet2 = Create<Packet> (900);
 //   cc.Msend (packet2);
