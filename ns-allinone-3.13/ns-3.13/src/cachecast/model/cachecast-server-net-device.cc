@@ -49,6 +49,9 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
   PacketInfo info(packet, dest, protocolNumber);
   m_ccQueue.push_back (info);
 
+  CacheCastTag ccTag;
+  packet->PeekPacketTag (ccTag);
+
   if (ccTag.IsLastPacket ())
   {
     NS_LOG_DEBUG ("Send() received the last CacheCast packet " << packet);

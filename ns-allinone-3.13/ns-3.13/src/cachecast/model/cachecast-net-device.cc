@@ -36,6 +36,7 @@
 #include "ns3/ppp-header.h"
 #include "cachecast-net-device.h"
 #include "cachecast-channel.h"
+#include "cachecast-tag.h"
 
 NS_LOG_COMPONENT_DEFINE ("CacheCastNetDevice");
 
@@ -224,20 +225,20 @@ CacheCastNetDevice::TransmitStart (Ptr<Packet> p)
   NS_ASSERT_MSG (m_txMachineState == READY, "Must be READY to transmit");
 
   /* If packet is a CacheCast packet we handle it */
-  CacheCastTag ccTag;
-  if (p->PeekPacketTag (cct))
-  {
-
-
-    bool ret = m_senderElement->handlePacket (p);
-
-    if (!ret) {
-      //DO SOMETHING
-      ;
-    }
-
-
-  }
+//   CacheCastTag ccTag;
+//   if (p->PeekPacketTag (ccTag))
+//   {
+// 
+// 
+//     bool ret = m_senderElement->HandlePacket (p);
+// 
+//     if (!ret) {
+//       //DO SOMETHING
+//       ;
+//     }
+// 
+// 
+//   }
 
   m_txMachineState = BUSY;
   m_currentPkt = p;
