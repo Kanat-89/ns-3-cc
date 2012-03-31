@@ -222,6 +222,23 @@ CacheCastNetDevice::TransmitStart (Ptr<Packet> p)
   // schedule an event that will be executed when the transmission is complete.
   //
   NS_ASSERT_MSG (m_txMachineState == READY, "Must be READY to transmit");
+
+  /* If packet is a CacheCast packet we handle it */
+  CacheCastTag ccTag;
+  if (p->PeekPacketTag (cct))
+  {
+
+
+    bool ret = m_senderElement->handlePacket (p);
+
+    if (!ret) {
+      //DO SOMETHING
+      ;
+    }
+
+
+  }
+
   m_txMachineState = BUSY;
   m_currentPkt = p;
   m_phyTxBeginTrace (m_currentPkt);

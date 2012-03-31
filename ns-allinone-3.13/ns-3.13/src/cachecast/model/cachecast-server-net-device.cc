@@ -46,15 +46,6 @@ CacheCastServerNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_
   Ptr<CacheCastPid> ccp = node->GetObject<CacheCastPid> ();
   NS_ASSERT_MSG (ccp, "A CacheCast server must have a CacheCastPid object");
 
-  UdpHeader udp_head;
-  CacheCastTag ccTag;
-  bool hasCcTag = packet->PeekPacketTag (ccTag);
-  NS_ASSERT_MSG (hasCcTag, "All CacheCast packets must have a CacheCastTag");
-
-  // if DCCP gets supported handle it also
-  uint32_t hasUdpHrd = packet->PeekHeader (udp_head);
-  NS_ASSERT_MSG(hasUdpHrd, "Only UDP packets are supported by CacheCast");
-
   PacketInfo info(packet, dest, protocolNumber);
   m_ccQueue.push_back (info);
 

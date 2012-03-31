@@ -71,6 +71,7 @@ CacheCast::Msend(Ptr<Packet> packet)
      
     for(socket = m_sockets.begin(); socket != m_sockets.end(); ++socket)
     {        
+        // if DCCP gets supported handle it also
         NS_ASSERT_MSG ((*socket)->GetSocketType () == Socket::NS3_SOCK_DGRAM, "This socket is not an UDP socket");
         
         node = (*socket)->GetNode ();

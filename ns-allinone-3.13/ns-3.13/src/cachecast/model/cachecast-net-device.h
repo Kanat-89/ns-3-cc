@@ -38,6 +38,8 @@
 #include "ns3/ptr.h"
 #include "ns3/mac48-address.h"
 
+#include "cachecast-element.h"
+
 namespace ns3 {
 
 class Queue;
@@ -45,17 +47,20 @@ class CacheCastChannel;
 class ErrorModel;
 
 /**
- * \defgroup point-to-point CacheCastNetDevice
- * This section documents the API of the ns-3 point-to-point module. For a generic functional description, please refer to the ns-3 manual.
+ * \defgroup cachecast CacheCastNetDevice
+ * This section documents the API of the ns-3 cachecast module.
+ * For a generic functional description, please refer to the ns-3 manual.
  */
 
 /**
- * \ingroup point-to-point
+ * \ingroup cachecast
  * \class CacheCastNetDevice
- * \brief A Device for a Point to Point Network Link.
+ * \brief A Device for a CacheCast supported Network Link.
+ *
+ * The CacheCastNetDevice is based on the PointToPointNetDevice
  *
  * This CacheCastNetDevice class specializes the NetDevice abstract
- * base class.  Together with a CacheCastChannel (and a peer 
+ * base class.Together with a CacheCastChannel (and a peer 
  * CacheCastNetDevice), the class models, with some level of 
  * abstraction, a generic point-to-point or serial link.
  * Key parameters or objects that can be specified for this device 
@@ -69,17 +74,11 @@ public:
 
   /**
    * Construct a CacheCastNetDevice
-   *
-   * This is the constructor for the CacheCastNetDevice.  It takes as a
-   * parameter a pointer to the Node to which this device is connected, 
-   * as well as an optional DataRate object.
    */
   CacheCastNetDevice ();
 
   /**
    * Destroy a CacheCastNetDevice
-   *
-   * This is the destructor for the CacheCastNetDevice.
    */
   virtual ~CacheCastNetDevice ();
 
@@ -204,9 +203,26 @@ private:
 
 private:
 
+  /* --------------- CACHECAST RELATED ------------------- */
+
+  /**
+   * This element modifies the packet right before it is
+   * transmitted onto the channel
+   */
+  Ptr<CacheCastElement> m_senderElement;
+
+  /**
+   * This element modifies the packet right after it has
+   * been received from the channel */
+  Ptr<CacheCastElement> m_receiverElement;
+
+  // TODO add relevant trace sources
+
+  /* ----------------------------------------------------- */
+
   /**
    * \returns the address of the remote device connected to this device
-   * through the point to point channel.
+   * through the CacheCast channel.
    */
   Address GetRemote (void) const;
 
